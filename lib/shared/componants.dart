@@ -5,9 +5,11 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:isc/Screens/Booking/Booking_New.dart';
 import 'package:isc/State_manage/Cubits/cubit.dart';
 
 import '../network/dio_helper.dart';
+import 'Data.dart';
 //..............................................................................
 
 class ToggleButton extends StatelessWidget {
@@ -181,12 +183,19 @@ class CustomDateTimePicker extends StatelessWidget {
   final DateTimePickerType pickerType;
   final ValueNotifier<DateTime> dateNotifier;
   final BoardDateTimeController controller;
+
   const CustomDateTimePicker({
     required this.pickerType,
     required this.dateNotifier,
     required this.controller,
     Key? key,
   }) : super(key: key);
+
+  // Method to retrieve the selected date or time
+  DateTime getSelectedDate() {
+    return dateNotifier.value;
+  }
+
   Future<void> _openDateTimePicker(BuildContext context) async {
     final DateTime? selectedDate = await showBoardDateTimePicker(
       context: context,
@@ -200,6 +209,7 @@ class CustomDateTimePicker extends StatelessWidget {
       dateNotifier.value = selectedDate;
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -236,7 +246,12 @@ class CustomDateTimePicker extends StatelessWidget {
                     formattedDate = '';
                 }
                 return Text(
-                  formattedDate,style: TextStyle(fontWeight: FontWeight.bold,color: Colors.black54,fontSize: 16),
+                  formattedDate,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black54,
+                    fontSize: 16,
+                  ),
                 );
               },
             ),
@@ -342,39 +357,98 @@ Widget divider() =>  Padding(
 
 //..............................................................................
 
-Widget ReservationItem( data)=>
-    Padding(
-      padding: const EdgeInsets.only(top: 10.0,right: 16,left: 16,bottom: 10),
-      child: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              offset: Offset(4, 4),
-              blurRadius: 10,
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12.0),
-          child:     Column(crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Row(
-                children: [
-                  Text('الاسم: ${data['PATIENT']}',style:TextStyle(color:Colors.black87,fontSize: 20,fontWeight: FontWeight.bold) ,),
-                ],
+
+class ReservationItem extends StatelessWidget {
+  final Map<String, dynamic> data;
+  final ValueChanged<String> onNoSelected;
+
+  const ReservationItem({
+    Key? key,
+    required this.data,
+    required this.onNoSelected,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    String year = data['SDate'].substring(0, 4);
+    String month = data['SDate'].substring(5, 7);
+    String day = data['SDate'].substring(8, 10);
+    String time = data['SDate'].substring(11, 16);
+    String Date = '${year}/${month}/${day}';
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 10.0, right: 16, left: 16, bottom: 10),
+      child: GestureDetector(
+        onTap: () {
+          edit = true;
+          BookingCubit.get(context).getBookindata();
+          onNoSelected(data['No'].toString());
+          print(patientcode);
+          // navigateToPage(context, BookingNew());
+        },
+        child: Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                offset: Offset(4, 4),
+                blurRadius: 10,
               ),
-              Text('كود المريض : ${data['pat_code']}',style:TextStyle(color:Colors.black54,fontSize: 16,fontWeight: FontWeight.bold) ,),
-              Text('${data['SDATE']}',style:TextStyle(color:Colors.black45,fontSize: 12,) ,),
-              Text('نوع الكشف : ${data['OperRoomt']== null ? 'كشف':data['OperRoomt']}',style:TextStyle(color:Colors.black54,fontSize: 12,) ,),
-              Text('التعاقد : ${data['cont_name']==null ? 'لا يوجد' : data['cont_name']} ',style:TextStyle(color:Colors.black54,fontSize: 12,) ,)
             ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  ' ${data['Patient']} :الاسم',
+                  style: TextStyle(
+                    color: Colors.black87,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  'كود المريض : ${data['PatCode']}',
+                  style: TextStyle(
+                    color: Colors.black54,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  '${Date}\n${time}',
+                  textAlign: TextAlign.end,
+                  style: TextStyle(
+                    color: Colors.black45,
+                    fontSize: 12,
+                  ),
+                ),
+                Text(
+                  'نوع الكشف : ${data['OperRoomt'] == null ? 'كشف' : data['OperRoomt']}',
+                  style: TextStyle(
+                    color: Colors.black54,
+                    fontSize: 12,
+                  ),
+                ),
+                Text(
+                  'التعاقد : ${data['cont_name'] == null ? 'خاص' : data['cont_name']}',
+                  style: TextStyle(
+                    color: Colors.black54,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+}
 
 //..............................................................................

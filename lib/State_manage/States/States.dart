@@ -12,24 +12,26 @@ abstract class loginStates {}
 }
 
 //..............................................................................
-
 abstract class getLoginDataStates {}
-  class getLoginDataSucessState extends getLoginDataStates {
-  final List<Map<String, dynamic>> Data;
 
+class getLoginDataInitialState extends getLoginDataStates {}
+
+class getLoginDataLoadingState extends getLoginDataStates {}
+class submet extends getLoginDataStates {}
+
+class getLoginDataSucessState extends getLoginDataStates {
+  final List<Map<String, dynamic>> Data;
   getLoginDataSucessState(this.Data);
 }
-  class getLoginDataErrorState extends getLoginDataStates {
-  final String error;
 
+class getLoginDataErrorState extends getLoginDataStates {
+  final String error;
   getLoginDataErrorState(this.error);
 }
-  class getLoginDataInitialState extends getLoginDataStates {}
-  class getLoginDataLoadingState extends getLoginDataStates {}
-  class PasswordValidationState extends getLoginDataStates {
-  final bool isValid;
 
-  PasswordValidationState(this.isValid);
+class getLoginDataSuccessMessage extends getLoginDataStates {
+  final String message;
+  getLoginDataSuccessMessage(this.message);
 }
 
 //..............................................................................
@@ -47,16 +49,50 @@ abstract class getDoctorDataStatus {}
 }
 
 //..............................................................................
+abstract class getpatientDataStatus {}
+  class getpatientDataInitState extends getpatientDataStatus {}
+  class getpatientDataLoadingState extends getpatientDataStatus {}
+  class getpatientDataSucessState extends getpatientDataStatus {
+  getpatientDataSucessState(Map<String, dynamic> patients );
+}
+  class getpatientDataErrorState extends getpatientDataStatus {
+  final String error;
+
+  getpatientDataErrorState(this.error);
+}
+
+//..............................................................................
 
 abstract class Bookingtatus {}
   class BookingInitState extends Bookingtatus {}
   class BookingLoadingState extends Bookingtatus {}
   class BookingCancelState extends Bookingtatus {}
-  class BookingucessState extends Bookingtatus {}
+  class BookingSucessState extends Bookingtatus {}
+class Bookingswitchstate extends Bookingtatus {
+  final bool isSelected;
+
+  Bookingswitchstate(this.isSelected);
+}
   class BookingErrorState extends Bookingtatus {
   final String error;
 
   BookingErrorState(this.error);
 }
+
+//..............................................................................
+abstract class getContactDataStates {}
+class getContactDataInitialState extends getContactDataStates {}
+class getContactDataLoadingState extends getContactDataStates {}
+class getContactDataSucessState extends getContactDataStates {
+  final List<String> Contacts;
+
+  getContactDataSucessState(this.Contacts);
+}
+class getContactDataErrorState extends getContactDataStates {
+  final String error;
+
+  getContactDataErrorState(this.error);
+}
+
 
 //..............................................................................

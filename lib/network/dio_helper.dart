@@ -7,15 +7,12 @@ class DioHelper {
     dio = Dio(
       BaseOptions
       (
-        baseUrl: 'http://192.168.1.7/api/',
+        baseUrl: 'http://192.168.1.198/api/',
       receiveDataWhenStatusError: true,
       headers:
        {
           'Content-Type':'application/json',
-
        })
-
-
     );
   }
   static Future<Response> getData ({ 
@@ -31,9 +28,21 @@ class DioHelper {
       Map<String, dynamic>? query,
       required Map<String, dynamic> data,
     }
-  )async
-  {
+  )async {
 return dio.post(
+  url,
+  queryParameters: query,
+  data: data,
+  );
+  }
+  static Future<Response> putData(
+    {
+      required String url,
+      Map<String, dynamic>? query,
+      required Map<String, dynamic> data,
+    }
+  )async {
+return dio.put(
   url,
   queryParameters: query,
   data: data,

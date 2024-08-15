@@ -1,0 +1,74 @@
+class BookingCubit extends Cubit<Bookingtatus> {
+
+  static BookingCubit get(BuildContext context) => BlocProvider.of(context);
+  BookingCubit() : super(BookingInitState());
+  bool _isOption1Selected= false;
+  Map<String, dynamic>? data;
+
+  void newBookin({
+    required String? time,
+    required String ? contact,
+    required String ? name,
+    required String ? patcode,
+    required String ? DayType,
+    required String ? Contact,
+    required bool ? again,
+}) {
+  emit(BookingLoadingState());
+  DioHelper.postData(
+      url: 'http://192.168.1.198/api/SecudleOut',
+      data:
+      {
+       'OPERATOR':Doctorname,
+       'op_code':StringselectedUserID,
+       'SDATE':Date,
+        'PATIENT':name,
+        'cconfirm':false,
+        'oper_roomt':"${again == false ?'كشف':'اعاده'}",
+        'pat_code':patcode,
+        'day_typ': DayType,
+        'cont_name': Contact,
+
+
+      } ).catchError((error)
+  {print(error);
+    emit(BookingErrorState(error.toString()));});
+}
+  void toogel() {
+    _isOption1Selected =!_isOption1Selected;
+
+    emit(Bookingswitchstate(_isOption1Selected));
+  }
+  void editBookin({
+    required String? No,
+     String ? patcode,
+     String ? Contact,
+     bool ? again,
+  })
+  {
+    emit(BookingLoadingState());
+    DioHelper.putData(
+        url: 'http://192.168.1.198/api/SecudleOut/$selectedNo',
+        data:
+        {
+          'SDATE':Date,
+          'oper_roomt':"${again == false ?'كشف':'اعاده'}",
+          'pat_code':patcode,
+          'cont_name': Contact,
+        } ).catchError((error)
+    {print(error);
+    emit(BookingErrorState(error.toString()));});
+  }
+  void getBookindata() async {
+    try {
+      emit(BookingLoadingState());
+      final response = await DioHelper.getData(url: 'http://192.168.1.198/api/secudleout/$selectedNo');
+       data = response.data ;
+      print(patientcode);
+      emit(BookingucessState());
+    } catch (e) {
+      print(e);
+      emit(BookingErrorState(e.toString()));
+    }
+  }
+}
