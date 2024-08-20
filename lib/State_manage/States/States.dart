@@ -1,11 +1,12 @@
 import 'package:isc/network/login_model.dart';
+import 'package:isc/shared/Data.dart';
 //..............................................................................
 
 abstract class loginStates {}
-  class loginInitState extends loginStates {}
-  class loginLoadingState extends loginStates {}
-  class loginSucessState extends loginStates {}
-  class loginErrorState extends loginStates {
+class loginInitState extends loginStates {}
+class loginLoadingState extends loginStates {}
+class loginSucessState extends loginStates {}
+class loginErrorState extends loginStates {
   final String error;
 
   loginErrorState(this.error);
@@ -37,12 +38,12 @@ class getLoginDataSuccessMessage extends getLoginDataStates {
 //..............................................................................
 
 abstract class getDoctorDataStatus {}
-  class getDoctorDataInitState extends getDoctorDataStatus {}
-  class getDoctorDataLoadingState extends getDoctorDataStatus {}
-  class getDoctorDataSucessState extends getDoctorDataStatus {
+class getDoctorDataInitState extends getDoctorDataStatus {}
+class getDoctorDataLoadingState extends getDoctorDataStatus {}
+class getDoctorDataSucessState extends getDoctorDataStatus {
   getDoctorDataSucessState(List<dynamic> Doctors );
 }
-  class getDoctorDataErrorState extends getDoctorDataStatus {
+class getDoctorDataErrorState extends getDoctorDataStatus {
   final String error;
 
   getDoctorDataErrorState(this.error);
@@ -50,12 +51,12 @@ abstract class getDoctorDataStatus {}
 
 //..............................................................................
 abstract class getpatientDataStatus {}
-  class getpatientDataInitState extends getpatientDataStatus {}
-  class getpatientDataLoadingState extends getpatientDataStatus {}
-  class getpatientDataSucessState extends getpatientDataStatus {
+class getpatientDataInitState extends getpatientDataStatus {}
+class getpatientDataLoadingState extends getpatientDataStatus {}
+class getpatientDataSucessState extends getpatientDataStatus {
   getpatientDataSucessState(Map<String, dynamic> patients );
 }
-  class getpatientDataErrorState extends getpatientDataStatus {
+class getpatientDataErrorState extends getpatientDataStatus {
   final String error;
 
   getpatientDataErrorState(this.error);
@@ -64,16 +65,21 @@ abstract class getpatientDataStatus {}
 //..............................................................................
 
 abstract class Bookingtatus {}
-  class BookingInitState extends Bookingtatus {}
-  class BookingLoadingState extends Bookingtatus {}
-  class BookingCancelState extends Bookingtatus {}
-  class BookingSucessState extends Bookingtatus {}
+class BookingInitState extends Bookingtatus {}
+class BookingLoadingState extends Bookingtatus {}
+class BookingaddedState extends Bookingtatus {}
+class BookingSucessState extends Bookingtatus {}
 class Bookingswitchstate extends Bookingtatus {
   final bool isSelected;
 
   Bookingswitchstate(this.isSelected);
 }
-  class BookingErrorState extends Bookingtatus {
+class editBookingswitchstate extends Bookingtatus {
+   final bool isSelected ;
+
+  editBookingswitchstate(this.isSelected);
+}
+class BookingErrorState extends Bookingtatus {
   final String error;
 
   BookingErrorState(this.error);
@@ -93,6 +99,22 @@ class getContactDataErrorState extends getContactDataStates {
 
   getContactDataErrorState(this.error);
 }
-
-
 //..............................................................................
+abstract class SelectDateState {}
+
+class SelectDateInitialState extends SelectDateState {
+  final DateTime initialDate;
+
+  SelectDateInitialState(this.initialDate);
+}
+
+class SelectDateChangedState extends SelectDateState {
+  final DateTime selectedDate;
+
+  SelectDateChangedState(this.selectedDate);
+}
+
+class SelectDateClearedState extends SelectDateState {}
+//..............................................................................
+
+

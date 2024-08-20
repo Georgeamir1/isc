@@ -48,4 +48,13 @@ return dio.put(
   data: data,
   );
   }
+  static Future<Response> DeleteData(
+    {
+      required String url,
+    }
+  )async {
+return dio.delete(
+  url,
+  );
+  }
 }

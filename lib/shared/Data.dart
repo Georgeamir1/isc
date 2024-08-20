@@ -1,18 +1,21 @@
-// late final String? selectedUserID;
-
- int? doubleselectedUserID  ;
+late final String? selectedUserID;
+int? doubleselectedUserID  ;
 String? StringselectedUserID ;
 String? patientcode;
 String? Doctorname ;
+String? patientname ;
 String? Doctorspecialty ;
 String? Book ;
 String? SDATE ;
 String? rowguid ;
-String? Date ;
+String? Date  ;
+String? Contact ;
 String? DayType ;
 String? time ;
-String? SelectedContact;
 String? selectedNo;
-bool ? edit ;
+late bool    New  ;
+bool?   edit ;
+DateTime initialDate2=DateTime.now();
+DateTime ?selectedDate ;
 
-
+var list;
