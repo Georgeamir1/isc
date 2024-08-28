@@ -82,7 +82,7 @@ class Home extends StatelessWidget{
         ),
       );
   }
-  
+
   void _goToSettingsPage(BuildContext context) {
     // Navigate to the home page
 
