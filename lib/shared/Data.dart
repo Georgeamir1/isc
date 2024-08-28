@@ -15,6 +15,8 @@ String? time ;
 String? selectedNo;
 late bool    New  ;
 bool?   edit ;
+ bool isExpanded =false ;
+ bool iscollabsed =false ;
 DateTime initialDate2=DateTime.now();
 DateTime ?selectedDate ;
 

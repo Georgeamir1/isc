@@ -4,9 +4,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:isc/Home/home/Home.dart';
 import 'package:isc/State_manage/States/States.dart';
 import 'package:isc/network/dio_helper.dart';
-import '../../Screens/Booking/Booking_list.dart';
+import '../../Home/Booking/Booking_list.dart';
 import '../../shared/Data.dart';
 //..............................................................................
 String? SelectedContact;
@@ -54,7 +55,7 @@ class getDataCubit extends Cubit<getLoginDataStates> {
       // Navigate to BookingList
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => BookingList()),
+        MaterialPageRoute(builder: (context) => Home()),
       );
     } else {
       emit(getLoginDataErrorState('Password is incorrect!'));
@@ -101,19 +102,13 @@ class getpatientDataCubit extends Cubit<getpatientDataStatus> {
   static getpatientDataCubit get(BuildContext context) => BlocProvider.of(context);
 
   Map<String, dynamic>? patients;
+  List<dynamic>? patientTable;
   String? patientname2 = 'اكتب كود المريض';
   String errormessage = '';
   String? patientcode2;
-
-  void updatePatientCode(String value) {
-    patientcode2 = value;
-    patientcode = patientcode2;
-    getdata();
-  }
-
+  int? patientlenth;
   void getdata() async {
     if (patientcode2 == null || patientcode2!.isEmpty) return;
-
     String url = 'http://192.168.1.198/api/Patient/filtered/$patientcode2';
     try {
       emit(getpatientDataLoadingState());
@@ -123,13 +118,73 @@ class getpatientDataCubit extends Cubit<getpatientDataStatus> {
       patientname2 = patients?["NAME"];
       patientcode2 = patients?["pat_code"];
       patientname = patientname2;
-
       emit(getpatientDataSucessState(patients!));
+      print('patientlenth');
     } catch (e) {
       errormessage = 'Network Error';
       emit(getpatientDataErrorState(e.toString()));
     }
   }
+  void getpatientsdata() async {
+    String url = 'http://192.168.1.198/api/Patient';
+    try {
+      emit(getpatientDataLoadingState());
+      final response = await DioHelper.getData(url: url);
+      patientTable = response.data;
+      patientlenth =patientTable?.length;
+      print(patientlenth);
+      emit(getpatientTableSucessState(patientTable!.length));
+    } catch (e) {
+      errormessage = 'Network Error';
+      print(e);
+      emit(getpatientDataErrorState(e.toString()));
+    }
+  }
+  void NewPatient({
+
+    required String? PatientName,
+    required String? NationalID,
+    required String? Phone,
+    required String? Address,
+    required String? BirthDate,
+    required int? contindx,
+    required int? code,
+    required bool? Gender,
+  })
+  {
+    emit(getpatientDataLoadingState());
+
+    DioHelper.postData(
+      url: 'http://192.168.1.198/api/Patient',
+
+      data: {
+        'NAME': PatientName ?? '',
+        'id_NO': NationalID ?? '',
+        'PHONE': Phone ?? '',
+        'ADDRESS': Address ?? '',
+        'BIRTH_DT': BirthDate,
+        'cont': contindx ,
+        'mal': Gender ?? '',
+        'mal': Gender ?? '',
+        'PCODE': code,
+      },
+
+
+    ).catchError((error) {
+      print(error);
+      emit(getpatientDataErrorState(error.toString()));
+    });
+    emit(newpatientSuccessState());
+
+  }
+
+  void updatePatientCode(String value) {
+    patientcode2 = value;
+    patientcode = patientcode2;
+    getdata();
+  }
+
+
 }
 
 //..............................................................................
@@ -293,3 +348,24 @@ class SelectDateCubit extends Cubit<SelectDateState> {
 //..............................................................................
 
 
+class AnimationCubit extends Cubit<AnimationState> {
+  AnimationCubit() : super(AnimationInitialState());
+
+  void selectAddAnimation() {
+
+      isExpanded =!isExpanded;
+      iscollabsed = false;
+      emit(AnimationExpandedState());
+
+  }
+  void selectAdd2Animation() {
+      iscollabsed =!iscollabsed;
+      emit(AnimationCollapsed2State());
+
+  }
+
+  void resetAnimation() {
+    isExpanded =!isExpanded;
+    emit(AnimationInitialState());
+  }
+}

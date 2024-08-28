@@ -1,13 +1,13 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:board_datetime_picker/board_datetime_picker.dart';
 import 'package:dropdown_search/dropdown_search.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
-import '../Screens/Booking/edit_Booking.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+
+import '../Home/Booking/edit_Booking.dart';
 import '../State_manage/Cubits/cubit.dart';
 import 'Data.dart';
-import 'package:easy_date_timeline/easy_date_timeline.dart';
 
 //..............................................................................
 class ToggleButton extends StatelessWidget {
@@ -62,41 +62,57 @@ class Screens extends StatelessWidget {
   const Screens({
     Key? key,
     required this.screenname,
-    required this.imagepath,
     required this.onPressed,
+    required this.imagepath,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Text(
-            screenname,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-            ),
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        height: 200,
+        width: 250,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.lightBlue, Colors.indigo],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Image.asset(
-                imagepath,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.3),
+              offset: Offset(3, 0),
+              blurRadius: 3,
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Text(
+                screenname,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
               ),
-            ),
+               Expanded(
+               child: Padding(
+                 padding: const EdgeInsets.all(12.0),
+               child: Image.asset(
+               imagepath,
+               ),
+               ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
-      style: ElevatedButton.styleFrom(
-          fixedSize: Size(300, 200),
-          backgroundColor: Color(0xffA4D7FF),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(25),
-          )),
     );
   }
 }
@@ -793,14 +809,17 @@ class Datetimeline extends StatelessWidget {
     );
   }
 }
-//..............................................................................
 
+//..............................................................................
 class PatientCodeSearchDelegate extends SearchDelegate {
   final List<dynamic> data;
+
   PatientCodeSearchDelegate(this.data);
+
   List<Map<String, dynamic>> get _typedData {
     return data.cast<Map<String, dynamic>>();
   }
+
   @override
   List<Widget> buildActions(BuildContext context) {
     return [
@@ -812,6 +831,7 @@ class PatientCodeSearchDelegate extends SearchDelegate {
       ),
     ];
   }
+
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
@@ -821,6 +841,7 @@ class PatientCodeSearchDelegate extends SearchDelegate {
       },
     );
   }
+
   @override
   Widget buildResults(BuildContext context) {
     // Filter results based on 'No', 'PatCode', or 'Patient'
@@ -830,7 +851,9 @@ class PatientCodeSearchDelegate extends SearchDelegate {
       final patient = item['Patient'].toLowerCase();
       final searchQuery = query.toLowerCase();
 
-      return no.contains(searchQuery) || patCode.contains(searchQuery) || patient.contains(searchQuery);
+      return no.contains(searchQuery) ||
+          patCode.contains(searchQuery) ||
+          patient.contains(searchQuery);
     }).toList();
     return ListView.builder(
       itemCount: results.length,
@@ -853,9 +876,12 @@ class PatientCodeSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    final suggestions = _typedData.where((item) =>
-        item['PatCode'].toString().toLowerCase().contains(query.toLowerCase())
-    ).toList();
+    final suggestions = _typedData
+        .where((item) => item['PatCode']
+            .toString()
+            .toLowerCase()
+            .contains(query.toLowerCase()))
+        .toList();
 
     return ListView.builder(
       itemCount: suggestions.length,
@@ -872,22 +898,90 @@ class PatientCodeSearchDelegate extends SearchDelegate {
     );
   }
 }
-Future <bool> _showExitConfirmationDialog(BuildContext context) async {
+
+Future<bool> _showExitConfirmationDialog(BuildContext context) async {
   return await showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: Text('Exit App'),
-      content: Text('Are you sure you want to exit the app?'),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(false),
-          child: Text('No'),
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Exit App'),
+          content: Text('Are you sure you want to exit the app?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text('No'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text('Yes'),
+            ),
+          ],
         ),
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(true),
-          child: Text('Yes'),
+      ) ??
+      false;
+}
+
+//..............................................................................
+class ReusableTextFormField extends StatelessWidget {
+  final TextEditingController controller;
+  final Function(String) onChanged;
+  final String hintText;
+  final String? Function(String?)? validator;
+  final double? height;
+
+  const ReusableTextFormField({
+    Key? key,
+    required this.controller,
+    required this.onChanged,
+    required this.hintText,
+    this.validator,
+    this.height, // Optional height parameter
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Container(
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.2),
+                  spreadRadius: 2,
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: TextFormField(
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              onChanged: onChanged,
+              controller: controller,
+              textAlign: TextAlign.start,
+              decoration: InputDecoration(
+                hintStyle: TextStyle(
+                  color: Colors.grey[600],
+                  fontWeight: FontWeight.w400,
+                ),
+                hintText: hintText,
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+              style: TextStyle(
+                color: Colors.black54,
+                fontWeight: FontWeight.w500,
+              ),
+              validator: validator,
+              maxLines: null, // Allow multiple lines
+            ),
+          ),
         ),
       ],
-    ),
-  ) ?? false;
+    );
+  }
 }

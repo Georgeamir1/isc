@@ -53,8 +53,13 @@ class getDoctorDataErrorState extends getDoctorDataStatus {
 abstract class getpatientDataStatus {}
 class getpatientDataInitState extends getpatientDataStatus {}
 class getpatientDataLoadingState extends getpatientDataStatus {}
+class newpatientSuccessState extends getpatientDataStatus {}
 class getpatientDataSucessState extends getpatientDataStatus {
   getpatientDataSucessState(Map<String, dynamic> patients );
+}
+class getpatientTableSucessState extends getpatientDataStatus {
+  int  lenth;
+  getpatientTableSucessState(this.lenth );
 }
 class getpatientDataErrorState extends getpatientDataStatus {
   final String error;
@@ -115,6 +120,18 @@ class SelectDateChangedState extends SelectDateState {
 }
 
 class SelectDateClearedState extends SelectDateState {}
-//..............................................................................
+//............................................................................
+abstract class AnimationState {
+  const AnimationState();
 
+  @override
+  List<Object> get props => [];
+}
 
+class AnimationInitialState extends AnimationState {}
+
+class AnimationExpandedState extends AnimationState {}
+class AnimationExpanded2State extends AnimationState {}
+
+class AnimationCollapsedState extends AnimationState {}
+class AnimationCollapsed2State extends AnimationState {}
