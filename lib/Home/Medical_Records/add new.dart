@@ -14,7 +14,6 @@ import '../../shared/componants.dart';
 import '../Medical_Records/meds.dart';
 import '../Medical_Records/records.dart';
 import '../Medical_Records/Services.dart';
-
 class addnew extends StatelessWidget {
   final TextEditingController patientCodeController = TextEditingController();
   final TextEditingController Mwds = TextEditingController();
