@@ -1,10 +1,12 @@
+import '../State_manage/Cubits/cubit.dart';
+
 late final String? selectedUserID;
-int? doubleselectedUserID  ;
+double? doubleselectedUserID  ;
 String? StringselectedUserID ;
 String? patientcode;
 String? Doctorname ;
 String? patientname ;
-String? Doctorspecialty ;
+int? ClinicID ;
 String? Book ;
 String? SDATE ;
 String? rowguid ;
@@ -19,5 +21,11 @@ bool?   edit ;
  bool iscollabsed =false ;
 DateTime initialDate2=DateTime.now();
 DateTime ?selectedDate ;
-
-var list;
+ bool isDarkmodesaved =false  ;
+ bool isArabicsaved =true  ;
+ bool isArabic =false  ;
+bool isDarkmode= false ;
+late int docslenth;
+late bool serviceonly ;
+late int reservationslenth;
+final String DateNow= "${DateTime.now()}";

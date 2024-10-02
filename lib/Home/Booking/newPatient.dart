@@ -1,8 +1,9 @@
 import 'package:board_datetime_picker/board_datetime_picker.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:dropdown_search/dropdown_search.dart';
+import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:http/http.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,13 +21,10 @@ class NewPatient extends StatelessWidget {
   final TextEditingController PatientNIDControler = TextEditingController();
   final TextEditingController PatientPhoneControler = TextEditingController();
   final TextEditingController PatientAddressControler = TextEditingController();
-  final TextEditingController ContactControler = TextEditingController();
   final ValueNotifier<DateTime> dateNotifier = ValueNotifier<DateTime>(DateTime.now());
   final BoardDateTimeController dateTimeController = BoardDateTimeController();
   final _formKey = GlobalKey<FormState>(); // Form key
   bool isSelected = false;
-  String? SelectedContact;
-  int? selectedContactIndex;
 
   int? code;
   NewPatient({Key? key}) : super(key: key);
@@ -50,378 +48,236 @@ class NewPatient extends StatelessWidget {
 
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (BuildContext context) => getContactDataCubit()..getdata()),
         BlocProvider(create: (BuildContext context) => getpatientDataCubit()..getpatientsdata()),
         BlocProvider(create: (BuildContext context) => BookingCubit())
       ],
       child: BlocConsumer<getpatientDataCubit, getpatientDataStatus>(
         listener: (context, state) {},
         builder: (context, state) {
-          return Scaffold(
-            backgroundColor: Colors.grey[100],
-            resizeToAvoidBottomInset: true,
-            appBar: PreferredSize(
-              preferredSize: const Size.fromHeight(72.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Colors.lightBlue, Colors.indigo],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: const BorderRadius.vertical(bottom: Radius.circular(20)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      offset: const Offset(0, 4),
-                      blurRadius: 8,
-                    ),
-                  ],
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 8.0, right: 8),
-                  child: AppBar(
-                    automaticallyImplyLeading: false,
-                    backgroundColor: Colors.transparent,
-                    elevation: 0,
-                    title: const Text(
-                      'New Patient',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        letterSpacing: 1.2,
-                      ),
-                    ),
-                  ),
-                ),
+          return Directionality(
+            textDirection: isArabicsaved ? TextDirection.rtl : TextDirection.ltr,
+            child: Scaffold(
+              backgroundColor: isDarkmodesaved ? Color(0xff232323) : Colors.grey[50],
+              resizeToAvoidBottomInset: true,
+              appBar: CustomAppBar(
+                title: isArabicsaved ? 'مريض جديد' : 'New Patient',
               ),
-            ),
-            body: SingleChildScrollView(
-              padding: const EdgeInsets.all(20.0),
-              child: Form(
-                key: _formKey, // Assign form key
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: ReusableTextFormField(
+              body: SingleChildScrollView(
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                padding: const EdgeInsets.all(20.0),
+                child: Form(
+                  key: _formKey, // Assign form key
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ReusableTextFormField(
+                              maxLenght: 250,
                               controller: PatientNameControler,
                               onChanged: (p0) {},
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Please enter Name';
+                                  return isArabicsaved ? 'الرجاء إدخال الاسم' : 'Please enter Name';
                                 }
                               },
-                              hintText: 'Patient Name'),
-                        ),
-                        SizedBox(width: 8,),
-                        BlocBuilder<getpatientDataCubit,getpatientDataStatus>(
-                          builder: ( context, state) {
-                            code = getpatientDataCubit.get(context).patientlenth;
-                            return Container(
-                              width: 48,
-                              height: 48,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.2),
-                                    spreadRadius: 2,
-                                    blurRadius: 6,
-                                    offset: const Offset(0, 2),
+                              hintText: isArabicsaved ? 'اسم المريض' : 'Patient Name',
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          BlocBuilder<getpatientDataCubit, getpatientDataStatus>(
+                            builder: (context, state) {
+                              code = getpatientDataCubit.get(context).patientlenth ?? 1;
+                              return CustomwhiteContainer(
+                                width: 48,
+                                height: 48,
+                                Radius: 12,
+                                child: Center(
+                                  child: Text(
+                                    '$code',
+                                    style: TextStyle(
+                                      color: isDarkmodesaved ? Colors.white : Colors.grey[600],
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
                                   ),
-                                ],
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Center(
-                                child: Text(
-                                    '${ getpatientDataCubit.get(context).patientlenth}',style: TextStyle(color: Colors.grey[600],fontWeight: FontWeight.bold,fontSize: 16),),
-                              ),
-                            );
-
-                          },
-
-                        )
-
-
-
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    ReusableTextFormField(
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      ReusableTextFormField(
+                        maxLenght: 14,
+                        keyboardType: TextInputType.number,
                         controller: PatientNIDControler,
                         onChanged: (p0) {},
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter ID';
+                            return isArabicsaved ? 'الرجاء إدخال الرقم القومي' : 'Please enter ID';
+                          } else if (value.length != 14) {
+                            return isArabicsaved ? 'يجب إدخال 14 رقمًا' : 'Please enter 14 digits';
                           }
                         },
-                        hintText: 'National ID'),
-                    const SizedBox(height: 24),
-                    ReusableTextFormField(
+                        hintText: isArabicsaved ? 'الرقم القومي' : 'National ID',
+                      ),
+                      const SizedBox(height: 24),
+                      ReusableTextFormField(
+                        maxLenght: 11,
+                        keyboardType: TextInputType.number,
                         controller: PatientPhoneControler,
                         onChanged: (p0) {},
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter Phone';
+                            return isArabicsaved ? 'الرجاء إدخال الهاتف' : 'Please enter Phone';
+                          } else if (value.length != 11) {
+                            return isArabicsaved ? 'يجب إدخال 11 رقمًا' : 'Please enter 11 digits';
                           }
                         },
-                        hintText: 'Mobile Number'),
-                    const SizedBox(height: 24),
-                    ReusableTextFormField(
+                        hintText: isArabicsaved ? 'رقم الجوال' : 'Mobile Number',
+                      ),
+                      const SizedBox(height: 24),
+                      ReusableTextFormField(
+                        maxLenght: 400,
                         controller: PatientAddressControler,
                         onChanged: (p0) {},
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter Address';
+                            return isArabicsaved ? 'الرجاء إدخال العنوان' : 'Please enter Address';
                           }
                         },
-                        hintText: 'Address'),
-                    const SizedBox(height: 24),
-                    Container(
-                      decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.2),
-                            spreadRadius: 2,
-                            blurRadius: 6,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                        borderRadius: BorderRadius.circular(12),
+                        hintText: isArabicsaved ? 'العنوان' : 'Address',
                       ),
-
-                      child:
-                      FormField<DateTime>(
-                        validator: (value) {
-                          if (value == null) {
-                            return 'Please select a date';
-                          }
-                          return null; // Return null if the value is valid
-                        },
-                        builder: (FormFieldState<DateTime> state) {
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: CustomDateTimePicker2(
+                      const SizedBox(height: 24),
+                      CustomwhiteContainer(
+                        child: FormField<DateTime>(
+                          validator: (value) {
+                            if (value == null) {
+                              return isArabicsaved ? 'الرجاء اختيار التاريخ' : 'Please select a date';
+                            }
+                            return null;
+                          },
+                          builder: (FormFieldState<DateTime> state) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CustomDateTimePicker2(
                                   pickerType: DateTimePickerType.date,
                                   dateNotifier: dateNotifier,
                                   controller: dateTimeController,
                                   onDateChanged: (DateTime? newDateTime) {
-                                    state.didChange(newDateTime); // Update the FormField's state
-                                    state.validate(); // Validate the form field again after the date changes
+                                    state.didChange(newDateTime);
+                                    state.validate();
                                   },
                                 ),
-                              ),
-                              if (state.hasError) // Display validation error if it exists
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 5, left: 13),
-                                  child: Text(
-                                    state.errorText ?? '',
-                                    style: TextStyle(
-                                      color: Color(0xFFbd0000), // Deep red color for error text
-                                      fontSize: 12,
+                                if (state.hasError)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 5, left: 13),
+                                    child: Text(
+                                      state.errorText ?? '',
+                                      style: const TextStyle(
+                                        color: Color(0xFFbd0000),
+                                        fontSize: 12,
+                                      ),
                                     ),
                                   ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      BlocBuilder<BookingCubit, Bookingtatus>(
+                        builder: (context, state) {
+                          isSelected = (state is Bookingswitchstate && state.isSelected);
+
+                          return CustomwhiteContainer(
+                            height: 60,
+                            child: SwitchListTile(
+                              activeTrackColor: Colors.indigoAccent,
+                              title: Text(
+                                isSelected ? (isArabicsaved ? 'ذكر' : 'Male') : (isArabicsaved ? 'أنثى' : 'Female'),
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: isSelected ? Colors.blueAccent : Colors.pinkAccent,
                                 ),
-                            ],
+                              ),
+                              value: isSelected,
+                              onChanged: (bool value) {
+                                BookingCubit.get(context).toogel();
+                              },
+                              inactiveTrackColor: Colors.pinkAccent,
+                              inactiveThumbColor: Colors.white,
+                            ),
                           );
                         },
                       ),
-
-                    ),
-                    const SizedBox(height: 24),
-                    Container(
-                      decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.2),
-                            spreadRadius: 2,
-                            blurRadius: 6,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child:
-                      BlocBuilder<getContactDataCubit, getContactDataStates>(
-                    builder: (context, state) {
-                      final cubit = getContactDataCubit.get(context);
-
-                      return DropdownSearch<String>(
-                        items: cubit.Contacts,
-                        dropdownDecoratorProps: DropDownDecoratorProps(
-                          dropdownSearchDecoration: InputDecoration(
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                            hintText: "Select Contact",
-                            hintStyle: TextStyle(color: Colors.grey[600]),
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(color: Colors.blueAccent, width: 2),
-                            ),
-                          ),
-                        ),
-                        selectedItem: selectedContactIndex != null ? cubit.Contacts[selectedContactIndex!] : null,
-                        popupProps: PopupProps.menu(
-                          showSearchBox: true,
-                          searchFieldProps: TextFieldProps(
-                            decoration: InputDecoration(
-                              hintText: 'Search...',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide.none,
-                              ),
-                              filled: true,
-                              fillColor: Colors.grey[200],
-                              prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
-                            ),
-                          ),
-                          itemBuilder: (context, item, isSelected) => ListTile(
-                            title: Text(item),
-                            selected: isSelected,
-                          ),
-                        ),
-                        filterFn: (item, filter) => item.toLowerCase().contains(filter.toLowerCase()),
-                        onChanged: (String? newValue) {
-                          _formKey.currentState!.validate();
-
-                          if (newValue != null) {
-                            selectedContactIndex = cubit.Contacts.indexOf(newValue); // Store the index of the selected item
-                            cubit.selectUser(newValue);
-                            SelectedContact = newValue; // Update SelectedContact variable
-                          }
-                        },
-                      );
-                    },
-                    )
-                    ),
-                    const SizedBox(height: 24),
-                    BlocBuilder<BookingCubit, Bookingtatus>(
-                      builder: (context, state) {
-                        isSelected = (state is Bookingswitchstate && state.isSelected);
-
-                        return Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.2),
-                                spreadRadius: 2,
-                                blurRadius: 6,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-
-                          child: SwitchListTile(
-                            activeTrackColor: Colors.indigoAccent,
-                            title: Text(isSelected ? 'Male' : 'Female',
-                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: isSelected ? Colors.blueAccent:Colors.pinkAccent),
-                            ),
-                            value: isSelected,
-                            onChanged: (bool value) {
-                              BookingCubit.get(context).toogel();
-                            },
-                          inactiveTrackColor: Colors.pinkAccent,
-                          inactiveThumbColor: Colors.white,
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 24),
-                    Container(width: double.infinity,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Colors.lightBlue, Colors.indigo],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(30),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
-                            offset: Offset(4, 4),
-                            blurRadius: 8,
-                          ),
-                        ],
-                      ),
-
-                      child: ElevatedButton.icon(
-                        onPressed: () async{
-
-
-                          if (_formKey.currentState!.validate()) {
-                            getpatientDataCubit.get(context).NewPatient(
-                                PatientName: PatientNameControler.text,
-                                NationalID: PatientNIDControler.text,
-                                Phone: PatientPhoneControler.text,
-                                Address: PatientAddressControler.text,
-                                BirthDate: Date,
-                                contindx: selectedContactIndex,
-                                Gender: isSelected,
-                                code: code);
-                            navigateToPage(context, BookingList());
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Form Submitted Successfully',
-                                  style: TextStyle(color: Colors.white),
+                      const SizedBox(height: 50),
+                      CustomblueContainer(
+                        Radius: 30,
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: () async {
+                            if (_formKey.currentState!.validate()) {
+                              getpatientDataCubit.get(context).NewPatient(
+                                  PatientName: PatientNameControler.text,
+                                  NationalID: PatientNIDControler.text,
+                                  Phone: PatientPhoneControler.text,
+                                  Address: PatientAddressControler.text,
+                                  BirthDate: Date,
+                                  Gender: isSelected,
+                                  code: code);
+                              navigateToPage(context, BookingList());
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    isArabicsaved?'تم الاضافه بنجاح':'Form Submitted Successfully',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  backgroundColor: Colors.green,
                                 ),
-                                backgroundColor: Colors.green,
-                              ),
-                            );
-                          } else {
-                            // Display error message
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Please fill in all required fields',
-                                  style: TextStyle(color: Colors.white),
+                              );
+                            } else {
+                              // Display error message
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    isArabicsaved?'املاء الحقول الفارغه من فضلك':'Please fill in all required fields',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  backgroundColor: Colors.red,
                                 ),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                          }
-                        },
+                              );
+                            }
+                          },
 
 
-                        icon: Icon(
-                          Icons.check_circle,
-                          color: Colors.white,
-                        ),
-                        label: Text(
-                          'Submit',
-                          style: TextStyle(
+                          icon: Icon(
+                            Icons.check_circle,
                             color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
                           ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
+                          label: Text(
+                            isArabicsaved?'تاكيد':'Submit',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                          elevation: 0,
-                          shadowColor: Colors.transparent,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            elevation: 0,
+                            shadowColor: Colors.transparent,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

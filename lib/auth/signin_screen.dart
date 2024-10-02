@@ -1,30 +1,49 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dropdown_search/dropdown_search.dart';
+import 'package:isc/shared/componants.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../State_manage/Cubits/cubit.dart';
 import '../State_manage/States/States.dart';
+import '../shared/Data.dart';
 
-class MainPage extends StatelessWidget {
+class MainPage extends StatefulWidget {
+  @override
+  _MainPageState createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
   final TextEditingController _passwordController = TextEditingController();
-  final RefreshController _refreshController = RefreshController(initialRefresh: false);
+  final RefreshController _refreshController =
+  RefreshController(initialRefresh: false);
+  bool showpassword = true;
 
   void _onRefresh(BuildContext context) async {
-    // Refresh your data here
-    await Future.delayed(Duration(milliseconds: 1000)); // Simulate network delay
+    // Simulate refreshing your data
+    await Future.delayed(
+        Duration(milliseconds: 1000)); // Simulate network delay
     context.read<getDataCubit>().getdata();
     _refreshController.refreshCompleted();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => getDataCubit()..getdata(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => getDataCubit()..getdata(),
+        ),
+        BlocProvider(
+          create: (context) => ShowPasswordcubit(),
+        ),
+      ],
       child: Scaffold(
-        backgroundColor: Colors.grey[100],
+        backgroundColor: isDarkmodesaved ? Color(0xff232323) : Colors.grey[50],
         body: BlocConsumer<getDataCubit, getLoginDataStates>(
           listener: (context, state) {
             if (state is getLoginDataErrorState) {
+              print('${state.error}');
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('Network Error: ${state.error}')),
               );
@@ -38,7 +57,8 @@ class MainPage extends StatelessWidget {
             final cubit = context.read<getDataCubit>();
             List<String> userNames = [];
             if (state is getLoginDataSucessState) {
-              userNames = state.Data.map((user) => user['NAME'] as String).toList();
+              userNames =
+                  state.Data.map((user) => user['User_Name'] as String).toList();
             }
 
             return SmartRefresher(
@@ -51,33 +71,26 @@ class MainPage extends StatelessWidget {
                   children: [
                     SizedBox(height: 20),
                     Center(
-                      child: Image.asset(
-                        'assets/images/icon 1.png',
-                        height: 160,
-                        width: 160,
+                      child: isDarkmodesaved
+                          ? Image.asset(
+                        'assets/images/icon dark2.png',
+                        height: 200,
+                        width: 200,
+                      )
+                          : Image.asset(
+                        'assets/images/icon light.png',
+                        height: 200,
+                        width: 200,
                       ),
                     ),
                     SizedBox(height: 30),
                     Center(
-                      child: Container(
+                      child: CustomblueContainer(
+                        Radius: 15,
+                        height: 65,
                         padding: EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Colors.lightBlue, Colors.indigo],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(15),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.5),
-                              offset: Offset(4, 4),
-                              blurRadius: 10,
-                            ),
-                          ],
-                        ),
                         child: Text(
-                          'ORCHIDA CLINIC',
+                          isArabicsaved ? 'اوركيدا كلينك' : 'ORCHIDA CLINIC',
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -88,116 +101,113 @@ class MainPage extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 50),
-                    Container(
-                      decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.2),
-                            spreadRadius: 2,
-                            blurRadius: 6,
-                            offset: Offset(0, 2),
-                          ),
-                        ],
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child:
-                      DropdownSearch<String>(
+                    CustomwhiteContainer(
+                      child: DropdownSearch<String>(
                         items: userNames,
                         dropdownDecoratorProps: DropDownDecoratorProps(
+                          baseStyle: TextStyle(
+                            color: isDarkmodesaved
+                                ? Colors.white
+                                : Colors.black45,
+                          ),
                           dropdownSearchDecoration: InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                            hintText: "Select User",
-                            hintStyle: TextStyle(color: Colors.grey[600]),
-                            filled: true,
-                            fillColor: Colors.white,
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 12),
+                            hintText: isArabicsaved ? 'اختر مستخدم' : "Select User",
+                            hintStyle: TextStyle(
+                              color: isDarkmodesaved
+                                  ? Colors.white
+                                  : Colors.grey[600],
+                            ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide.none,
                             ),
+                            suffixIconColor:
+                            isDarkmode ? Colors.white : Colors.black45,
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: Colors.blueAccent, width: 2),
+                              borderSide: BorderSide(
+                                  color: Colors.blueAccent, width: 2),
                             ),
                           ),
                         ),
                         selectedItem: cubit.selectedUser,
                         popupProps: PopupProps.menu(
                           showSearchBox: true,
-
                           searchFieldProps: TextFieldProps(
+                            style: TextStyle(
+                              color: isDarkmode ? Colors.white : Colors.black,
+                            ),
                             decoration: InputDecoration(
-                              hintText: 'Search...',
+                              hintText: isArabicsaved ? 'ابحث' : 'Search',
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
                               ),
                               filled: true,
                               fillColor: Colors.grey[200],
-                              prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
+                              prefixIcon: Icon(
+                                Icons.search,
+                                color: Colors.grey[600],
+                              ),
                             ),
                           ),
-                          itemBuilder: (context, item, isSelected) => ListTile(
-                            title: Text(item),
-                            selected: isSelected,
-                          ),
+                          itemBuilder: (context, item, isSelected) =>
+                              ListTile(
+                                title: Text(
+                                  item,
+                                  style: TextStyle(
+                                    color: isDarkmodesaved
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
+                                ),
+                                selected: isSelected,
+                              ),
                         ),
-                        filterFn: (item, filter) => item.toLowerCase().contains(filter.toLowerCase()),
+                        filterFn: (item, filter) =>
+                            item.toLowerCase().contains(filter.toLowerCase()),
                         onChanged: (String? newValue) {
                           cubit.selectUser(newValue ?? '');
+                        },
+                        dropdownBuilder: (context, selectedItem) {
+                          return Text(
+                            selectedItem ??
+                                (isArabicsaved ? 'اختر مستخدم ' : 'Select User'),
+                            style: TextStyle(
+                              color: isDarkmodesaved
+                                  ? Colors.white
+                                  : Colors.grey[600],
+                            ),
+                          );
                         },
                       ),
                     ),
                     SizedBox(height: 20),
-                    Container(
-                      decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.2),
-                            spreadRadius: 2,
-                            blurRadius: 6,
-                            offset: Offset(0, 2),
-                          ),
-                        ],
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: TextField(
-                        controller: _passwordController,
-                        decoration: InputDecoration(
-                          labelText: 'Enter Password',
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.blueAccent, width: 2),
-                          ),
-                          prefixIcon: Icon(Icons.lock, color: Colors.grey[600]),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    ReusableTextFormField(
+                      prefixIconButton: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            showpassword = !showpassword;
+                          });
+                        },
+                        icon: Icon(
+                          showpassword
+                              ? Icons.remove_red_eye
+                              : CupertinoIcons.eye_slash_fill,
+                          color: isDarkmodesaved
+                              ? Colors.white
+                              : Colors.grey[600],
                         ),
-                        obscureText: true,
                       ),
+                      obscureText: showpassword,
+                      controller: _passwordController,
+                      onChanged: (p0) {},
+                      hintText: isArabicsaved ? 'كلمه السر' : 'Enter Password',
                     ),
-                    SizedBox(height: 60),
-                    Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Colors.lightBlue, Colors.indigo],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(30),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
-                            offset: Offset(4, 4),
-                            blurRadius: 8,
-                          ),
-                        ],
-                      ),
+                    SizedBox(height: 120),
+                    CustomblueContainer(
                       child: ElevatedButton.icon(
                         onPressed: () {
                           FocusScope.of(context).unfocus();
@@ -209,7 +219,7 @@ class MainPage extends StatelessWidget {
                           color: Colors.white,
                         ),
                         label: Text(
-                          'Submit',
+                          isArabicsaved ? 'تسجيل دخول' : 'Login',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,
