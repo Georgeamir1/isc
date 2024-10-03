@@ -51,104 +51,145 @@ class Services extends StatelessWidget {
           if (state is GetPrescreptionDataLoadingState) {
             return Center(child: CircularProgressIndicator());
           }
-          return Scaffold(
-            backgroundColor: isDarkmodesaved ? Color(0xff232323) : Colors.grey[50],
-            appBar: CustomAppBar(title: 'Services'),
-            body: Screenshot(
-              controller: screenshotController,
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      SizedBox(height: 12,),
-                      ListView.builder(
-                        physics: NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: controllers.length,
-                        itemBuilder: (context, index) {
-                          if (index < controllers.length) {
-                            final controller4 = controllers[index];
+          return Directionality(
+            textDirection: isArabicsaved ? TextDirection.rtl : TextDirection.ltr,
+
+            child: Scaffold(
+              backgroundColor: isDarkmodesaved ? Color(0xff232323) : Colors.grey[50],
+              appBar: CustomAppBar(title: isArabicsaved?'الخدمات':'Services'),
+              body: Screenshot(
+                controller: screenshotController,
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        SizedBox(height: 12,),
+                        ListView.builder(
+                          physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: controllers.length,
+                          itemBuilder: (context, index) {
+                            if (index < controllers.length) {
+                              final controller4 = controllers[index];
 
 
-                            return Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: servicesitems( controller1: controller4,),
-                            );
-                          } else {
-                            print('Index out of bounds in ListView.builder: index=$index');
-                            return SizedBox.shrink(); // Return an empty widget if index is out of range
-                          }
-                        },
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          IconButton(
-                            icon: Icon(
-                              CupertinoIcons.add_circled,
-                              size: 30,
-                              color: isDarkmodesaved ? Colors.white : Colors.black54,
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: servicesitems( controller1: controller4,),
+                              );
+                            } else {
+                              print('Index out of bounds in ListView.builder: index=$index');
+                              return SizedBox.shrink(); // Return an empty widget if index is out of range
+                            }
+                          },
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            IconButton(
+                              icon: Icon(
+                                CupertinoIcons.add_circled,
+                                size: 30,
+                                color: isDarkmodesaved ? Colors.white : Colors.black54,
+                              ),
+                              onPressed: () {
+                                context.read<ServicessCubit>().addServices();
+                              },
                             ),
-                            onPressed: () {
-                              context.read<ServicessCubit>().addServices();
-                            },
-                          ),
-                        ],
-                      ),
-                      ElevatedButton(
-                        onPressed: () async {
-                          print('Patient Name: $patientname');
-                          print('Patient Code: $patientcode');
-                          print('Docslenth: $docslenth');
-                          final Services = context.read<ServicessCubit>().getServices();
-                          print('Services: $Services');
-                          final completer = Completer<void>();
-                          for (var REC in Services) {
-                            context.read<GetservicesDateCubit>()
-                                .NewService(
-                              PatientName: "$patientname",
-                              patcode: '$patientcode',
-                              disname: '${REC['name']}',
-                              Docno: '${docslenth}',
-                            )
-                                .then((_) {
-                              // Complete the completer when all prescriptions are processed
-                              completer.complete();
-                            })
-                                .catchError((error) {
-                              // Complete the completer with an error if there's an issue
-                              completer.completeError(error);
-                            });
-                          }
-                          if (serviceonly == true)
-                            {
-                              print (serviceonly);
+                          ],
+                        ),
+                        ElevatedButton(
+                            child: Text(isArabicsaved?'تم':'Done'),
+
+                            onPressed: () async {
+                            print('Patient Name: $patientname');
+                            print('Patient Code: $patientcode');
+                            print('Docslenth: $docslenth');
+                            final Services = context.read<ServicessCubit>()
+                                .getServices();
+                            print('Services: $Services');
+                            final completer = Completer<void>();
+                            final currentState = state;
+                            final lastIndex = currentState.controllers.length -
+                                1;
+                            if (lastIndex < 0) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(
+                                      'No controllers available to add Services')));
+                              return;
+                            }
+
+                            final medNameController = currentState.controllers[lastIndex];
+                            final newServicesicationName = medNameController.text;
+                            if (newServicesicationName.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(
+                                      'Service name cannot be empty')));
+                              return;
+                            }
+                            final isDuplicate = currentState.Services
+                                .any((REC) => REC['name'] == newServicesicationName);
+
+                            if (isDuplicate) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(
+                                      'Service is duplicated')));
+                              return;
+                            }
+                            if (newServicesicationName.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(
+                                      'Service is duplicated')));
+                              return;
+                            }
+                            for (var REC in Services) {
+                              context.read<GetservicesDateCubit>()
+                                  .NewService(
+                                PatientName: "$patientname",
+                                patcode: '$patientcode',
+                                disname: '${REC['name']}',
+                                Docno: '${docslenth}',
+                              )
+                                  .then((_) {
+                                // Complete the completer when all prescriptions are processed
+                                completer.complete();
+                              })
+                                  .catchError((error) {
+                                // Complete the completer with an error if there's an issue
+                                completer.completeError(error);
+                              });
+                            }
+                            if (serviceonly == true) {
+                              print(serviceonly);
                               docslenth++;
                             }
 
-                          else  {}
-                          Navigator.pop(context);
+                            else {}
+                            Navigator.pop(context);
 
-                          try {
-                            await completer.future;
-                            final state = context.read<GetservicesDateCubit>().state;
-                            // if (state is GetServiceDataSuccessState) {
-                            //   Navigator.push(
-                            //     context,
-                            //     MaterialPageRoute(builder: (context) => MedicalRecords()), // Replace Home with your actual homepage widget
-                            //   );
-                            // }
-                          } catch (error) {
-                            // Handle any errors here
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Failed to add prescription.')),
-                            );
+                            try {
+                              await completer.future;
+                              final state = context
+                                  .read<GetservicesDateCubit>()
+                                  .state;
+                              // if (state is GetServiceDataSuccessState) {
+                              //   Navigator.push(
+                              //     context,
+                              //     MaterialPageRoute(builder: (context) => MedicalRecords()), // Replace Home with your actual homepage widget
+                              //   );
+                              // }
+                            } catch (error) {
+                              // Handle any errors here
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(
+                                    'Failed to add prescription.')),
+                              );
+                            }
                           }
-                        },
-                        child: Text('Done'),
-                      ),
-                    ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

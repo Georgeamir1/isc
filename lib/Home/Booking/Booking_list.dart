@@ -38,14 +38,12 @@ class BookingList extends StatelessWidget {
           if (selectedDateState is SelectDateChangedState) {
             selectedDate = selectedDateState.selectedDate;
           }
-
           final filteredList = list.where((item) {
             final itemDate = DateTime.parse(item['SDate']);
             return itemDate.year == selectedDate.year &&
                 itemDate.month == selectedDate.month &&
                 itemDate.day == selectedDate.day;
           }).toList();
-
           return Directionality(
             textDirection: isArabicsaved ? TextDirection.rtl : TextDirection.ltr,
             child: WillPopScope(
@@ -143,7 +141,6 @@ class BookingList extends StatelessWidget {
                                   onNoSelected: (no) {
                                     selectedNo = no;
                                     edit = true;
-                                    print('Selected NO: $selectedNo');
                                   },
                                 );
                               },

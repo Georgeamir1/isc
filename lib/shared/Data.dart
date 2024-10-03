@@ -22,7 +22,7 @@ bool?   edit ;
 DateTime initialDate2=DateTime.now();
 DateTime ?selectedDate ;
  bool isDarkmodesaved =false  ;
- bool isArabicsaved =true  ;
+ bool isArabicsaved =false;
  bool isArabic =false  ;
 bool isDarkmode= false ;
 late int docslenth;

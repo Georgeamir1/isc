@@ -316,6 +316,7 @@ class BookingNew extends StatelessWidget {
                                   Contact: Contact,
                                   id_clinic: ClinicID,
                                 );
+                                Date = null;
                                 Contact = null;
                                 navigateToPage(context, BookingList());
                                 ScaffoldMessenger.of(context).showSnackBar(

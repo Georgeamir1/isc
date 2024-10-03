@@ -140,6 +140,7 @@ class EditBooking extends StatelessWidget {
                             child: CustomwhiteContainer(
                               child: BlocBuilder<getContactDataCubit, getContactDataStates>(
                                 builder: (context, state) {
+                                  print(Contact);
                                   final cubit = getContactDataCubit.get(context);
                                   return DropdownSearch<String>(
                                     items: cubit.Contacts,
@@ -284,6 +285,7 @@ class EditBooking extends StatelessWidget {
                                   No: selectedNo,
                                   Contact: Contact,
                                 );
+                                Date = null;
                                 Contact = null;
                                 navigateToPage(context, BookingList());
                               },

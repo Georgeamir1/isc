@@ -229,6 +229,8 @@ class NewPatient extends StatelessWidget {
                                   BirthDate: Date,
                                   Gender: isSelected,
                                   code: code);
+                              Date = null;
+                              Contact =null;
                               navigateToPage(context, BookingList());
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(

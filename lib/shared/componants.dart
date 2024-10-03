@@ -703,7 +703,7 @@ class MedsItem extends StatelessWidget {
                       decoration: InputDecoration(
                         hintStyle: TextStyle(color: isDarkmodesaved ? Colors.white : Colors.black54),
                         border: InputBorder.none,
-                        hintText: 'Enter drug name',
+                        hintText: isArabicsaved?'ادخل اسم الدواء':'Enter drug name',
                       ),
                     );
                   },
@@ -725,7 +725,7 @@ class MedsItem extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 6),
-            Text('Times per day For ', style: TextStyle(color: isDarkmodesaved ? Colors.white : Colors.black54, fontWeight: FontWeight.bold, fontSize: 16)),
+            Text(isArabicsaved?'مرات لمده ':'Times per day For ', style: TextStyle(color: isDarkmodesaved ? Colors.white : Colors.black54, fontWeight: FontWeight.bold, fontSize: 16)),
             Expanded(
               child: ReusableTextFormField(
                 keyboardType: TextInputType.numberWithOptions(),
@@ -736,7 +736,7 @@ class MedsItem extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 6),
-            Text('Days', style: TextStyle(color: isDarkmodesaved ? Colors.white : Colors.black54, fontWeight: FontWeight.bold, fontSize: 12),),
+            Text(isArabicsaved?' ايام ':'Days', style: TextStyle(color: isDarkmodesaved ? Colors.white : Colors.black54, fontWeight: FontWeight.bold, fontSize: 16),),
             if (index >0)IconButton(
               icon: Icon(Icons.delete, color: Colors.red),
               onPressed: () {
@@ -839,13 +839,17 @@ class servicesitems extends StatelessWidget {
                     controller1.text = selectedItem['name'];
                   },
                   fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
-                    return TextField(
-                      controller: controller,
-                      focusNode: focusNode,
-                      decoration: InputDecoration(
-                        hintStyle: TextStyle(color: isDarkmodesaved ? Colors.white : Colors.black54),
-                        border: InputBorder.none,
-                        hintText: 'Enter Service',
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: TextField(
+                        controller: controller,
+                        focusNode: focusNode,
+                        decoration: InputDecoration(
+                          hintStyle: TextStyle(color: isDarkmodesaved ? Colors.white : Colors.black54),
+                          border: InputBorder.none,
+                          hintText:isArabicsaved?'ادخل خدمه':'Enter Service',
+
+                        ),
                       ),
                     );
                   },
@@ -1268,7 +1272,7 @@ class ReusableTextFormField extends StatelessWidget {
         buildCounter: (context, {required currentLength, required isFocused, maxLength}) {
           return null; // Return null to hide the counter
         },
-        textAlign: Align ?? TextAlign.left,
+        textAlign: Align ?? (isArabicsaved?TextAlign.right:TextAlign.left),
         autovalidateMode: AutovalidateMode.onUserInteraction,
         onChanged: onChanged,
         controller: controller,
@@ -1376,23 +1380,23 @@ class patientsitem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CustomText(Textdata: '${patient['NAME']}',fontSize: 20,fontWeight: FontWeight.bold,),
-                    CustomText(Textdata: 'Code: ${patient['PCODE']}'),
+                    CustomText(Textdata:isArabicsaved?'الكود: ${patient['PCODE']}':'Code: ${patient['PCODE']}'),
                   ],
                 ),
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(left: 28.0, bottom: 12),
+                    padding: isArabicsaved? EdgeInsets.only(right: 28.0, bottom: 12):EdgeInsets.only(left: 28.0, bottom: 12),
                     child: Row(
                       children: [
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            CustomText(Textdata:'Phone: ${patient['PHONE']}'),
+                            CustomText(Textdata:isArabicsaved? 'الهاتف: ${patient['PHONE']}':'Phone: ${patient['PHONE']}'),
                             // CustomText(Textdata:'Adress: ${patient['ADDRESS']}'),
                             CustomText(
-                                Textdata: 'Birthdate: ${patient['BIRTH_DT'].substring(0, 10)}' ),
+                                Textdata: isArabicsaved?'تاريخ الميلاد: ${patient['BIRTH_DT'].substring(0, 10)}':'Birthdate: ${patient['BIRTH_DT'].substring(0, 10)}' ),
                             CustomText(
-                              Textdata: patient['mal'] ? 'Gender: Male' : 'Gender: Female',),
+                              Textdata:isArabicsaved? patient['mal'] ? 'النوع : ذكر' : 'النوع : انثي':patient['mal'] ? 'Gender: Male' : 'Gender: Female',),
                           ],
                         ),
                       ],
@@ -1434,16 +1438,16 @@ class Doctorsitem extends StatelessWidget {
                 ),
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(left: 28.0, bottom: 12),
+                    padding: isArabicsaved? EdgeInsets.only(right: 28.0, bottom: 12):EdgeInsets.only(left: 28.0, bottom: 12),
                     child: Row(
                       children: [
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            CustomText(Textdata: 'Phone: ${patient['Mobile']}'),
-                            CustomText(Textdata: 'code: ${patient['DOC']}' ),
-                            CustomText(Textdata:'insp: ${patient['insip_name']}'),
-                            CustomText(Textdata: 'email: ${patient['email']}' ),
+                            CustomText(Textdata:isArabicsaved?'التليفون : ${patient['Mobile']}': 'Phone: ${patient['Mobile']}'),
+                            CustomText(Textdata: isArabicsaved?'الكود:  ${patient['DOC']}':'code: ${patient['DOC']}' ),
+                            CustomText(Textdata:isArabicsaved?'التخصص:  ${patient['insip_name']}':'insp: ${patient['insip_name']}'),
+                            CustomText(Textdata: isArabicsaved?'البريد : ${patient['email']}':'email: ${patient['email']}' ),
                           ],
                         ),
                       ],
