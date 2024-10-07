@@ -508,6 +508,9 @@ class ChoiceChipCubit extends Cubit<ChoiceChipState> {
 }
 
 //..............................................................................
+//..............................................................................
+//..............................................................................
+//..............................................................................
 class MedsCubit extends Cubit<MedsState> {
   MedsCubit() : super(MedsState.initial());
 
@@ -648,6 +651,7 @@ class MedsCubit extends Cubit<MedsState> {
     return medications;
   }
 }
+//..............................................................................
 class RecordssCubit extends Cubit<RecordsState> {
   RecordssCubit()
       : super(RecordsState(
@@ -722,6 +726,7 @@ class RecordssCubit extends Cubit<RecordsState> {
     return Records;
   }
 }
+//..............................................................................
 class ServicessCubit extends Cubit<ServicesState> {
   ServicessCubit() : super(ServicesState(controllers: [TextEditingController()],
     Services: [], error: null,));
@@ -786,10 +791,16 @@ class ServicessCubit extends Cubit<ServicesState> {
     return Services;
   }
 }
+//..............................................................................
+
 class getDrugsDataCubit extends Cubit<getDrugsDataStatus> {
   List<Map<String, dynamic>> Drugs = [];
+  List<Map<String, dynamic>> Examinations = [];
   String? selectedDrug;
   String? selectedDrugCode;
+  List<Map<String, dynamic>> departments = [];
+  String? selectedDepartment;
+  int? selectedDepartmentCategory;
 
   getDrugsDataCubit() : super(getDrugsDataInitState());
 
@@ -799,15 +810,12 @@ class getDrugsDataCubit extends Cubit<getDrugsDataStatus> {
     try {
       emit(getDrugsDataLoadingState());
       final response = await DioHelper.getData(
-          url:
-              'https://dailymed.nlm.nih.gov/dailymed/services/v2/drugclasses.json');
+          url: 'http://192.168.1.88/api/drugClinic/filtered/$ClinicID');
       final data = response.data;
 
-      // Assuming the data contains a key 'data' which is a list of maps
-      if (data is Map && data.containsKey('data')) {
-        final List<dynamic> drugsList = data['data'];
-        Drugs =
-            drugsList.map((item) => Map<String, dynamic>.from(item)).toList();
+      if (data is List) {
+        Drugs = data.map((item) => Map<String, dynamic>.from(item)).toList();
+        print('Drugs loaded: $Drugs'); // Debug print
         emit(getDrugsDataSucessState(Drugs));
       } else {
         throw Exception('Unexpected data format');
@@ -818,14 +826,180 @@ class getDrugsDataCubit extends Cubit<getDrugsDataStatus> {
     }
   }
 
-  void selectUser(String Drug) {
-    selectedDrug = Drug;
-    selectedDrugCode =
-        Drugs.firstWhere((user) => user['name'] == Drug)['code'] as String?;
+  void getExaminationdata() async {
+    try {
+      emit(getDrugsDataLoadingState());
+      final response = await DioHelper.getData(
+          url: 'http://192.168.1.88/api/hosDept/filtered/$ClinicID');
+      final data = response.data;
+
+      if (data is List) {
+        Examinations = data.map((item) => Map<String, dynamic>.from(item)).toList();
+        print('Examinations loaded: $Examinations'); // Debug print
+        emit(getDrugsDataSucessState(Drugs));
+      } else {
+        throw Exception('Unexpected data format');
+      }
+    } catch (e) {
+      print(e);
+      emit(getDrugsDataErrorState(e.toString()));
+    }
+  }
+
+  void getDepartmentsData() async {
+    try {
+      emit(getDepartmentsDataLoadingState());
+      final response = await DioHelper.getData(
+          url: 'http://192.168.1.88/api/hosDept/filtered/2');
+      final data = response.data;
+      print(data);
+
+      if (data is List) {
+        departments = data.map((item) => Map<String, dynamic>.from(item)).toList();
+        print('Departments loaded: $departments'); // Debug print
+        emit(getDepartmentsDataSuccessState(departments));
+      } else {
+        throw Exception('Unexpected data format');
+      }
+    } catch (e) {
+      print(e);
+      emit(getDepartmentsDataErrorState(e.toString()));
+    }
+  }
+
+  void selectDepartment(String departmentName) {
+    selectedDepartment = departmentName;
+    selectedDepartmentCategory = departments.firstWhere(
+          (dept) => dept['NAME'] == departmentName,
+      orElse: () => {'CATEGORY': null},
+    )['CATEGORY'] as int?;
+
+    emit(getDepartmentsDataSuccessState(departments));
+  }
+
+  void selectUser(String drug) {
+    selectedDrug = drug;
+    selectedDrugCode = Drugs.firstWhere(
+          (item) => item['E_DESC'] == drug,
+      orElse: () => {'noo': null},
+    )['noo'].toString();
 
     emit(getDrugsDataSucessState(Drugs));
   }
 }
+class DrugClinicCubit extends Cubit<DrugClinicState> {
+  final Dio _dio;
+  DrugClinicCubit(this._dio) : super(DrugClinicInitialState());
+
+  Future<void> fetchDrugClinicData() async {
+    emit(DrugClinicLoadingState());
+    try {
+      final response = await _dio.get('http://192.168.1.88/api/drugClinic/filtered/$ClinicID');
+
+      if (response.statusCode == 200) {
+        List<dynamic> data = response.data;
+
+        List<DrugClinic> drugList = data.map((json) => DrugClinic.fromJson(json)).toList();
+        emit(DrugClinicSuccessState(drugList));
+      } else {
+        emit(DrugClinicErrorState('Failed to fetch data'));
+      }
+    } catch (error) {
+      emit(DrugClinicErrorState('An error occurred: $error'));
+    }
+  }
+}
+class DrugClinic {
+  final int noo;
+  final String eDesc;
+  final int idClinic;
+
+  DrugClinic({
+    required this.noo,
+    required this.eDesc,
+    required this.idClinic,
+  });
+
+  factory DrugClinic.fromJson(Map<String, dynamic> json) {
+    return DrugClinic(
+      noo: json['noo'] ?? 0,
+      eDesc: json['E_DESC'] ?? '',
+      idClinic: json['id_clinic'] ?? 0,
+    );
+  }
+}
+
+//..............................................................................
+
+
+
+//..............................................................................
+class HospitalDepartment {
+  final int category;
+  final String name;
+  final String nameEnglish;
+  final String? remark;
+  final int idClinic;
+
+  HospitalDepartment({
+    required this.category,
+    required this.name,
+    required this.nameEnglish,
+    this.remark,
+    required this.idClinic,
+  });
+
+  factory HospitalDepartment.fromJson(Map<String, dynamic> json) {
+    return HospitalDepartment(
+      category: json['CATEGORY'] ?? 0,
+      name: json['NAME'] ?? '',
+      nameEnglish: json['name_e'] ?? '',
+      remark: json['remark'],
+      idClinic: json['id_clinic'] ?? 0,
+    );
+  }
+}
+
+class HospitalDepartmentCubit extends Cubit<HospitalDepartmentState> {
+  final Dio dio;
+
+  List<HospitalDepartment>? departments;
+
+  HospitalDepartmentCubit(this.dio) : super(HospitalDepartmentInitialState());
+
+  Future<void> fetchHospitalDepartments() async {
+    emit(HospitalDepartmentLoadingState());
+    try {
+      final response = await dio.get('http://192.168.1.88/api/hosDept/filtered/');
+      departments = (response.data as List).map((dept) => HospitalDepartment.fromJson(dept)).toList();
+      emit(HospitalDepartmentLoadedState(departments!));
+    } catch (error) {
+      emit(HospitalDepartmentErrorState(error.toString()));
+    }
+  }
+  void NewHospitalDepartment({
+    required String? NAME,
+    required String? remark,
+
+  }) {
+    DioHelper.postData(
+      url: 'http://192.168.1.88/api/hosDept/',
+      data: {
+        'NAME': NAME ?? '',
+        'remark': remark ?? '',
+        'id_clinic': ClinicID ?? '',
+
+      },
+    ).catchError((error) {
+      print(error);
+      emit(HospitalDepartmentErrorState(error.toString()));
+    });
+    emit(HospitalDepartmentSuccessState());
+  }
+}
+
+
+//..............................................................................
 class HomeCubit extends Cubit<HomeState> {
   HomeCubit() : super(HomeInitial());
 

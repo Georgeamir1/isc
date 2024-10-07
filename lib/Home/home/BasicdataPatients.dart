@@ -18,7 +18,6 @@ class BasicdataPatients extends StatelessWidget {
         builder: (context, state) {
           final cubit = context.read<getpatientDataCubit>();
           var patients = cubit.patientTable ?? [];
-
           return Scaffold(
             backgroundColor:
                 isDarkmodesaved ? Color(0xff232323) : Colors.grey[50],

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,21 +28,12 @@ class addnew extends StatelessWidget {
         BlocProvider(create: (BuildContext context) => getDoctorDataCubit()),
         BlocProvider(create: (BuildContext context) => ServicessCubit()),
         BlocProvider(create: (BuildContext context) => getpatientDataCubit()),
-        BlocProvider(
-            create: (BuildContext context) => GetPrescreptionDateCubit()),
-        BlocProvider(
-            create: (BuildContext context) =>
-                GetPrescreptionDateCubit()..getdata()),
-        BlocProvider(
-            create: (BuildContext context) =>
-                GetExaminationDateCubit()..getdata()),
-        BlocProvider(
-            create: (BuildContext context) =>
-                GetservicesDateCubit()..getData()),
+        BlocProvider(create: (BuildContext context) => GetPrescreptionDateCubit()),
+        BlocProvider(create: (BuildContext context) => GetPrescreptionDateCubit()..getdata()),
+        BlocProvider(create: (BuildContext context) => GetExaminationDateCubit()..getdata()),
+        BlocProvider(create: (BuildContext context) => GetservicesDateCubit()..getData()),
         BlocProvider(create: (BuildContext context) => RecordssCubit()),
-        BlocProvider(
-            create: (BuildContext context) =>
-                getDrugsDataCubit()..getDrugsdata()),
+        BlocProvider(create: (BuildContext context) => getDrugsDataCubit()..getDrugsdata()),
         BlocProvider(create: (BuildContext context) => MedsCubit()),
       ],
       child: BlocConsumer<MedsCubit, MedsState>(
@@ -56,6 +48,7 @@ class addnew extends StatelessWidget {
           }
         },
         builder: (context, state) {
+
           return Directionality(
             textDirection: isArabicsaved ? TextDirection.rtl : TextDirection.ltr,
 
@@ -66,6 +59,10 @@ class addnew extends StatelessWidget {
                 body: BlocConsumer<getDrugsDataCubit, getDrugsDataStatus>(
                   listener: (context, state) {},
                   builder: (context, state) {
+                    if(state is getDrugsDataSucessState)
+                      {
+                        getDrugsDataCubit.get(context).getDepartmentsData();
+                      }
                     return Scaffold(
                       appBar: CustomAppBar(title:isArabicsaved?'الروشته': 'prescreption'),
                       backgroundColor:
@@ -87,54 +84,18 @@ class addnew extends StatelessWidget {
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: CustomwhiteContainer(
-                                  child: Padding(
+                                  child:
+                                  Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: Autocomplete<Map<String, dynamic>>(
-                                      optionsBuilder: (textEditingValue) {
-                                        return getDrugsDataCubit
-                                            .get(context)
-                                            .Drugs
-                                            .where((drug) => drug['name']
-                                                .toLowerCase()
-                                                .contains(textEditingValue.text
-                                                    .toLowerCase()));
+                                    child:
+                                    DropdownSearch<String>(
+                                      items: getDrugsDataCubit.get(context).departments.map((drug) => drug['NAME'] as String).toList(),
+                                      onChanged: (value) {
+                                        getDrugsDataCubit.get(context).selectUser(value!); // Update selected drug in Cubit
                                       },
-                                      displayStringForOption: (option) =>
-                                          option['name'],
-                                      onSelected: (selectedItem) {
-                                        context
-                                            .read<getDrugsDataCubit>()
-                                            .selectUser(selectedItem['name']);
-                                        ExaminationController.text =
-                                            selectedItem['name'];
-                                      },
-                                      fieldViewBuilder: (context, controller,
-                                          focusNode, onFieldSubmitted) {
-                                        // Use the persistent controller
-                                        controller.text =
-                                            ExaminationController.text;
-                                        return TextField(
-                                          style: TextStyle(color: isDarkmodesaved? Colors.white:Colors.black45),
-                                          controller: controller,
-                                          focusNode: focusNode,
-                                          decoration: InputDecoration(
-                                            hintStyle: TextStyle(
-                                                color: isDarkmodesaved
-                                                    ? Colors.white
-                                                    : Colors.black54),
-                                            border: InputBorder.none,
-                                            hintText: ExaminationController
-                                                    .text.isNotEmpty
-                                                ? ExaminationController.text
-                                                : '${isArabicsaved?'ادخل التشخيص':'Enter Examination'}',
-                                          ),
-                                          onChanged: (value) {
-                                            ExaminationController.text = value;
-                                          },
-                                        );
-                                      },
+                                      selectedItem: getDrugsDataCubit.get(context).selectedDrug,
                                     ),
-                                  ),
+                                                                ),
                                 ),
                               ),
                               Text(
@@ -169,7 +130,6 @@ class addnew extends StatelessWidget {
                                             shrinkWrap: true,
                                             itemCount: controllers.length,
                                             itemBuilder: (context, index) {
-                                              print(state.medications.length);
                                               if (index <
                                                       timesPerDayControllers
                                                           .length &&
@@ -242,8 +202,6 @@ class addnew extends StatelessWidget {
                   onTap: () {
                     context.read<MedsCubit>().getMedications();
                     _handleAddButton(context, state);
-                    print(state.medications.length);
-                    print(serviceonly);
                   },
                   child: CustomblueContainer(
                     height: 60,

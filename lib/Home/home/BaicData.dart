@@ -8,6 +8,8 @@ import '../../State_manage/States/States.dart';
 import '../../shared/Data.dart';
 import '../../shared/componants.dart';
 import '../Booking/newPatient.dart';
+import 'BasicDataDrugs.dart';
+import 'BasicDataExaminations.dart';
 import 'NewUsers.dart';
 
 class Basicdata extends StatelessWidget {
@@ -53,10 +55,16 @@ class Basicdata extends StatelessWidget {
                               children: [
                                 buildChoiceChip(context, isArabicsaved ? 'المرضى' : 'Patients', state),
                                 buildChoiceChip(context, isArabicsaved ? 'الأطباء' : 'Doctors', state),
+                                buildChoiceChip(context, isArabicsaved ? 'الادويه' : 'Drugs', state),
                                 // You can uncomment this if necessary
                                 // buildChoiceChip(context, 'Examinations', state),
                               ],
                             ),
+                            Row(
+                              children: [
+                                buildChoiceChip(context, isArabicsaved ? 'التشخيصات' : 'Examination', state),
+                              ],
+                            )
                           ],
                         );
                       },
@@ -67,10 +75,16 @@ class Basicdata extends StatelessWidget {
                           if (chipState is ChoiceChipSelected &&
                               chipState.selectedChoice == (isArabicsaved ? 'المرضى' : 'Patients')) {
                             return BasicdataPatients();
+                          } if (chipState is ChoiceChipSelected &&
+                              chipState.selectedChoice == (isArabicsaved ? 'الادويه' : 'Drugs')) {
+                            return BasicDataDrugs();
                           }
                           if (chipState is ChoiceChipSelected &&
                               chipState.selectedChoice == (isArabicsaved ? 'الأطباء' : 'Doctors')) {
                             return BasicdataDoctors();
+                          } if (chipState is ChoiceChipSelected &&
+                              chipState.selectedChoice == (isArabicsaved ? 'التشخيصات' : 'Examination')) {
+                            return BasicDataExaminations();
                           } else {
                             return Center(
                               child: CustomText(

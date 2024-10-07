@@ -62,7 +62,24 @@ class NewDoctorErrorState extends getDoctorDataStatus {
 //..............................................................................
 
 abstract class getDrugsDataStatus {}
+class getDepartmentsDataInitState extends getDrugsDataStatus {}
 
+// Loading State
+class getDepartmentsDataLoadingState extends getDrugsDataStatus {}
+
+// Success State
+class getDepartmentsDataSuccessState extends getDrugsDataStatus {
+  final List<Map<String, dynamic>> departments;
+
+  getDepartmentsDataSuccessState(this.departments);
+}
+
+// Error State
+class getDepartmentsDataErrorState extends getDrugsDataStatus {
+  final String error;
+
+  getDepartmentsDataErrorState(this.error);
+}
 class getDrugsDataLoadingState extends getDrugsDataStatus {}
 class getDrugsDataInitState extends getDrugsDataStatus {}
 class getDrugsDataSucessState extends getDrugsDataStatus {
@@ -405,6 +422,46 @@ class CombinedDateError2 extends CombinedDateState2 {
 
   CombinedDateError2(this.error);
 }
+//............................................................................
+abstract class HospitalDepartmentState {}
+
+class HospitalDepartmentInitialState extends HospitalDepartmentState {}
+
+class HospitalDepartmentLoadingState extends HospitalDepartmentState {}
+class HospitalDepartmentSuccessState extends HospitalDepartmentState {}
+
+class HospitalDepartmentLoadedState extends HospitalDepartmentState {
+  final List<HospitalDepartment> departments;
+  HospitalDepartmentLoadedState(this.departments);
+}
+
+class HospitalDepartmentErrorState extends HospitalDepartmentState {
+  final String errorMessage;
+  HospitalDepartmentErrorState(this.errorMessage);
+}
+
+//............................................................................
+// Base State Class
+
+//............................................................................
+abstract class DrugClinicState {}
+
+class DrugClinicInitialState extends DrugClinicState {}
+
+class DrugClinicLoadingState extends DrugClinicState {}
+
+class DrugClinicSuccessState extends DrugClinicState {
+  final List<DrugClinic> drugList;
+
+  DrugClinicSuccessState(this.drugList);
+}
+
+class DrugClinicErrorState extends DrugClinicState {
+  final String errorMessage;
+
+  DrugClinicErrorState(this.errorMessage);
+}
+
 //............................................................................
 abstract class ShowPasswordStatus {}
 class ShowPasswordState extends ShowPasswordStatus{}

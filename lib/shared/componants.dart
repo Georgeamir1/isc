@@ -683,32 +683,61 @@ class MedsItem extends StatelessWidget {
         BlocBuilder<getDrugsDataCubit, getDrugsDataStatus>(
           builder: (context, state) {
             return CustomwhiteContainer(
-              child: Padding(
+              child:
+              Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Autocomplete<Map<String, dynamic>>(
                   optionsBuilder: (textEditingValue) {
+                    // Check if the input is empty and return an empty iterable if true
+                    if (textEditingValue.text.isEmpty) {
+                      return const Iterable<Map<String, dynamic>>.empty();
+                    }
+
+                    // Filter the drugs based on the input text using 'E_DESC'
                     return getDrugsDataCubit.get(context).Drugs.where((drug) =>
-                        drug['name'].toLowerCase().contains(textEditingValue.text.toLowerCase()));
+                        drug['E_DESC'].toLowerCase().contains(textEditingValue.text.toLowerCase()));
                   },
-                  displayStringForOption: (option) => option['name'],
+                  displayStringForOption: (option) => option['E_DESC'], // Use 'E_DESC' for display
                   onSelected: (selectedItem) {
-                    context.read<getDrugsDataCubit>().selectUser(selectedItem['name']);
-                    nameController.text = selectedItem['name'];
+                    // Select the drug and update the nameController text
+                    context.read<getDrugsDataCubit>().selectUser(selectedItem['E_DESC']);
+                    nameController.text = selectedItem['E_DESC'];
+                  },
+                  optionsViewBuilder: (context, onSelected, options) {
+                    return Container(
+                      color: Colors.white, // Set the background color of the dropdown to white
+                      child: Material(
+                        elevation: 4.0, // Optional: add elevation for a shadow effect
+                        child: ListView.builder(
+                          padding: const EdgeInsets.all(8.0),
+                          itemCount: options.length,
+                          itemBuilder: (context, index) {
+                            final option = options.elementAt(index);
+                            return ListTile(
+                              title: Text(option['E_DESC']),
+                              onTap: () {
+                                onSelected(option); // Call onSelected when tapped
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    );
                   },
                   fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
                     return TextField(
-                      style: TextStyle(color:  isDarkmodesaved? Colors.white:Colors.black45),
+                      style: TextStyle(color: isDarkmodesaved ? Colors.black : Colors.black45),
                       controller: controller,
                       focusNode: focusNode,
                       decoration: InputDecoration(
-                        hintStyle: TextStyle(color: isDarkmodesaved ? Colors.white : Colors.black54),
+                        hintStyle: TextStyle(color: isDarkmodesaved ? Colors.black54 : Colors.black54),
                         border: InputBorder.none,
-                        hintText: isArabicsaved?'ادخل اسم الدواء':'Enter drug name',
+                        hintText: isArabicsaved ? 'ادخل اسم الدواء' : 'Enter drug name',
                       ),
                     );
                   },
                 ),
-              ),
+              )
             );
           },
         ),
@@ -831,12 +860,12 @@ class servicesitems extends StatelessWidget {
                 child: Autocomplete<Map<String, dynamic>>(
                   optionsBuilder: (textEditingValue) {
                     return getDrugsDataCubit.get(context).Drugs.where((drug) =>
-                        drug['name'].toLowerCase().contains(textEditingValue.text.toLowerCase()));
+                        drug['E_DESC'].toLowerCase().contains(textEditingValue.text.toLowerCase()));
                   },
-                  displayStringForOption: (option) => option['name'],
+                  displayStringForOption: (option) => option['E_DESC'],
                   onSelected: (selectedItem) {
-                    context.read<getDrugsDataCubit>().selectUser(selectedItem['name']);
-                    controller1.text = selectedItem['name'];
+                    context.read<getDrugsDataCubit>().selectUser(selectedItem['E_DESC']);
+                    controller1.text = selectedItem['E_DESC'];
                   },
                   fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
                     return Padding(
@@ -1584,6 +1613,18 @@ class GlassyContainer extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+class DepartmentItem extends StatelessWidget {
+  final HospitalDepartment department;
+
+  const DepartmentItem({Key? key, required this.department}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(department.name),
     );
   }
 }
