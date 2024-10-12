@@ -685,7 +685,7 @@ class MedsItem extends StatelessWidget {
             return CustomwhiteContainer(
               child:
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(6.0),
                 child: Autocomplete<Map<String, dynamic>>(
                   optionsBuilder: (textEditingValue) {
                     // Check if the input is empty and return an empty iterable if true
@@ -744,27 +744,27 @@ class MedsItem extends StatelessWidget {
         SizedBox(height: 20),
         Row(
           children: [
-            Expanded(
-              child: ReusableTextFormField(
-                keyboardType: TextInputType.numberWithOptions(),
-                textStyle: TextStyle(color: isDarkmodesaved ? Colors.white : Colors.black54, fontWeight: FontWeight.bold, fontSize: 18),
-                height: 45,
-                controller: timesPerDayController,
-                hintText: '',
-              ),
+            ReusableTextFormField(
+              width: 38,
+              maxLenght: 1,
+              keyboardType: TextInputType.numberWithOptions(),
+              textStyle: TextStyle(color: isDarkmodesaved ? Colors.white : Colors.black54, fontWeight: FontWeight.bold, fontSize: 16),
+              height: 45,
+              controller: timesPerDayController,
+              hintText: '',
             ),
             const SizedBox(width: 6),
             Text(isArabicsaved?'مرات لمده ':'Times per day For ', style: TextStyle(color: isDarkmodesaved ? Colors.white : Colors.black54, fontWeight: FontWeight.bold, fontSize: 16)),
-            Expanded(
-              child: ReusableTextFormField(
-                keyboardType: TextInputType.numberWithOptions(),
-                height: 45,
-                textStyle: TextStyle(color: isDarkmodesaved ? Colors.white : Colors.black54, fontWeight: FontWeight.bold, fontSize: 18),
-                controller: daysController,
-                hintText: '',
-              ),
+            ReusableTextFormField(
+              width: 38,
+              maxLenght: 1,
+              keyboardType: TextInputType.numberWithOptions(),
+              height: 45,
+              textStyle: TextStyle(color: isDarkmodesaved ? Colors.white : Colors.black54, fontWeight: FontWeight.bold, fontSize: 16),
+              controller: daysController,
+              hintText: '',
             ),
-            const SizedBox(width: 6),
+            const SizedBox(width: 4),
             Text(isArabicsaved?' ايام ':'Days', style: TextStyle(color: isDarkmodesaved ? Colors.white : Colors.black54, fontWeight: FontWeight.bold, fontSize: 16),),
             if (index >0)IconButton(
               icon: Icon(Icons.delete, color: Colors.red),
@@ -775,6 +775,80 @@ class MedsItem extends StatelessWidget {
               },
             ),
           ],
+        ),
+        SizedBox(height: 16),
+        divider(),
+        SizedBox(height: 8),
+
+      ],
+    );
+  }
+}
+class NewDrugItem extends StatelessWidget {
+  final TextEditingController nameController;
+  final int index;
+  const NewDrugItem({
+    Key? key,
+    required this.nameController,
+    required this.index,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        BlocBuilder<getDrugsDataCubit, getDrugsDataStatus>(
+          builder: (context, state) {
+            return Row(
+              children: [
+                Expanded(child: ReusableTextFormField(controller: nameController, hintText: 'Enter drug name',)),
+              if (index >0)IconButton(
+            icon: Icon(Icons.delete, color: Colors.red),
+            onPressed: () {
+              context.read<MedsCubit>().getMedications();
+              context.read<MedsCubit>().deleteMed(index);
+              print(index);
+            },)
+              ],
+            );
+          },
+        ),
+        SizedBox(height: 16),
+        divider(),
+        SizedBox(height: 8),
+
+      ],
+    );
+  }
+}
+class NewExaminationItem extends StatelessWidget {
+  final TextEditingController nameController;
+  final int index;
+  const NewExaminationItem({
+    Key? key,
+    required this.nameController,
+    required this.index,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        BlocBuilder<getDrugsDataCubit, getDrugsDataStatus>(
+          builder: (context, state) {
+            return Row(
+              children: [
+                Expanded(child: ReusableTextFormField(controller: nameController, hintText: 'Enter examination name',)),
+              if (index >0)IconButton(
+            icon: Icon(Icons.delete, color: Colors.red),
+            onPressed: () {
+              context.read<MedsCubit>().getMedications();
+              context.read<MedsCubit>().deleteMed(index);
+              print(index);
+            },)
+              ],
+            );
+          },
         ),
         SizedBox(height: 16),
         divider(),
@@ -1297,6 +1371,7 @@ class ReusableTextFormField extends StatelessWidget {
       padding: padding,
       margin: margin,
       child: TextFormField(
+
          maxLength: maxLenght,
         buildCounter: (context, {required currentLength, required isFocused, maxLength}) {
           return null; // Return null to hide the counter

@@ -438,83 +438,88 @@ class MedicalRecords extends StatelessWidget {
                                                 child: CustomwhiteContainer(
                                                   child: ClipRRect(
                                                     borderRadius: BorderRadius.circular(15.0),
-                                                    child: ExpansionTile(
+                                                    child: GestureDetector(
+                                                      child: ExpansionTile(
 
-                                                       shape: BeveledRectangleBorder(side: BorderSide.none),
-                                                      iconColor:isDarkmode? Colors.white:Colors.black54 ,
-                                                      collapsedIconColor: isDarkmode? Colors.white:Colors.black54,
-                                                      collapsedBackgroundColor: isDarkmodesaved ? Colors.grey[700] : Colors.white,
-                                                      backgroundColor: isDarkmodesaved ? Colors.grey[700] : Colors.white,
-                                                      title: Column(crossAxisAlignment: CrossAxisAlignment.start,
+                                                         shape: BeveledRectangleBorder(side: BorderSide.none),
+                                                        iconColor:isDarkmode? Colors.white:Colors.black54 ,
+                                                        collapsedIconColor: isDarkmode? Colors.white:Colors.black54,
+                                                        collapsedBackgroundColor: isDarkmodesaved ? Colors.grey[700] : Colors.white,
+                                                        backgroundColor: isDarkmodesaved ? Colors.grey[700] : Colors.white,
+                                                        title: Column(crossAxisAlignment: CrossAxisAlignment.start,
 
-                                                        children: [
-                                                          Text(
-                                                            '${group.dateCodePairs.first.patName}',
-                                                            style: TextStyle(
-                                                              fontSize: 16,
-                                                              fontWeight: FontWeight.bold,
-                                                              color: isDarkmode ? Colors.white : Colors.black54,
-                                                            ),
-                                                          ),
-                                                          Text(
-                                                            isArabicsaved?'كود المريض: ${group.dateCodePairs.first.code}':'Code: ${group.dateCodePairs.first.code}',
-                                                            style: TextStyle(
-                                                              fontSize: 14,
-                                                              fontWeight: FontWeight.w600,
-                                                              color: isDarkmode ? Colors.white : Colors.black54,
-                                                            ),
-                                                          ),
-                                                          Text(
-                                                            isArabicsaved?'التاريخ: ${group.dateCodePairs.first.docDate.substring(0, 10)}':'Date: ${group.dateCodePairs.first.docDate.substring(0, 10)}',
-
-                                                            style: TextStyle(
-                                                              fontSize: 12,
-                                                              fontWeight: FontWeight.w400,
-                                                              color: isDarkmode ? Colors.white : Colors.black54,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      children: [
-                                                        Row(
                                                           children: [
-                                                            Padding(
-                                                              padding: const EdgeInsets.all(8.0),
-                                                              child: Column(
-                                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                                children: [
-                                                                  ...group.dateCodePairs.map((pair) {
-                                                                    return Padding(
-                                                                      padding: const EdgeInsets.symmetric(vertical: 4.0),
-                                                                      child: Container(
-                                                                        width: MediaQuery.of(context).size.width * 0.7, // Adjust width as needed
-                                                                        child: Text(
-                                                                          '${pair.date}',
-                                                                          textAlign: TextAlign.start,
-                                                                          style: TextStyle(
-                                                                            color: isDarkmodesaved ? Colors.white : Colors.black54,
-                                                                            fontSize: 12,
-                                                                          ),
-                                                                          overflow: TextOverflow.ellipsis, // Handle long text
-                                                                          maxLines: 1, // Ensure the text stays within one line
-                                                                        ),
-                                                                      ),
-                                                                    );
-                                                                  }).toList(),
-                                                                  SizedBox(height: 5),
-                                                                ],
+                                                            Text(
+                                                              '${group.dateCodePairs.first.patName}',
+                                                              style: TextStyle(
+                                                                fontSize: 16,
+                                                                fontWeight: FontWeight.bold,
+                                                                color: isDarkmode ? Colors.white : Colors.black54,
+                                                              ),
+                                                            ),
+                                                            Text(
+                                                              isArabicsaved?'كود المريض: ${group.dateCodePairs.first.code}':'Code: ${group.dateCodePairs.first.code}',
+                                                              style: TextStyle(
+                                                                fontSize: 14,
+                                                                fontWeight: FontWeight.w600,
+                                                                color: isDarkmode ? Colors.white : Colors.black54,
+                                                              ),
+                                                            ),
+                                                            Text(
+                                                              isArabicsaved?'التاريخ: ${group.dateCodePairs.first.docDate.substring(0, 10)}':'Date: ${group.dateCodePairs.first.docDate.substring(0, 10)}',
+
+                                                              style: TextStyle(
+                                                                fontSize: 12,
+                                                                fontWeight: FontWeight.w400,
+                                                                color: isDarkmode ? Colors.white : Colors.black54,
                                                               ),
                                                             ),
                                                           ],
-                                                        )
-                                                      ],
+                                                        ),
+                                                        children: [
+                                                          Row(
+                                                            children: [
+                                                              Padding(
+                                                                padding: const EdgeInsets.all(8.0),
+                                                                child: Column(
+                                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                                  children: [
+                                                                    ...group.dateCodePairs.map((pair) {
+                                                                      return Padding(
+                                                                        padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                                                        child: Container(
+                                                                          width: MediaQuery.of(context).size.width * 0.7, // Adjust width as needed
+                                                                          child: Text(
+                                                                            '${pair.date}',
+                                                                            textAlign: TextAlign.start,
+                                                                            style: TextStyle(
+                                                                              color: isDarkmodesaved ? Colors.white : Colors.black54,
+                                                                              fontSize: 12,
+                                                                            ),
+                                                                            overflow: TextOverflow.ellipsis, // Handle long text
+                                                                            maxLines: 1, // Ensure the text stays within one line
+                                                                          ),
+                                                                        ),
+                                                                      );
+                                                                    }).toList(),
+                                                                    SizedBox(height: 5),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          )
+                                                        ],
+                                                      ),
+                                                      onLongPress: () {
+                                                        print('${group.dateCodePairs.first.docno}');
+                                                      },
                                                     ),
                                                   ),
                                                 ),
                                               ),
-                                              SizedBox(
+                                               SizedBox(
                                                 height: 12,
-                                              )
+                                              ),
                                             ],
                                           );
                                           ;

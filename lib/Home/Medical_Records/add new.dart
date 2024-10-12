@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
-import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,7 +11,10 @@ import '../../State_manage/Cubits/cubit.dart';
 import '../../State_manage/States/States.dart';
 import '../../shared/Data.dart';
 import '../../shared/componants.dart';
+import '../Medical_Records/meds.dart';
+import '../Medical_Records/records.dart';
 import '../Medical_Records/Services.dart';
+
 class addnew extends StatelessWidget {
   final TextEditingController patientCodeController = TextEditingController();
   final TextEditingController Mwds = TextEditingController();
@@ -33,7 +35,7 @@ class addnew extends StatelessWidget {
         BlocProvider(create: (BuildContext context) => GetExaminationDateCubit()..getdata()),
         BlocProvider(create: (BuildContext context) => GetservicesDateCubit()..getData()),
         BlocProvider(create: (BuildContext context) => RecordssCubit()),
-        BlocProvider(create: (BuildContext context) => getDrugsDataCubit()..getDrugsdata()),
+        BlocProvider(create: (BuildContext context) => getDrugsDataCubit()..getDepartmentsData()),
         BlocProvider(create: (BuildContext context) => MedsCubit()),
       ],
       child: BlocConsumer<MedsCubit, MedsState>(
@@ -49,167 +51,195 @@ class addnew extends StatelessWidget {
         },
         builder: (context, state) {
 
-          return Directionality(
-            textDirection: isArabicsaved ? TextDirection.rtl : TextDirection.ltr,
+          return WillPopScope(
+            onWillPop: () => _onWillPop(context),
 
-            child: WillPopScope(
-              onWillPop: () => _onWillPop(context),
+            child: Scaffold(
+              body: BlocConsumer<getDrugsDataCubit, getDrugsDataStatus>(
+                listener: (context, state) {},
+                builder: (context, state) {
 
-              child: Scaffold(
-                body: BlocConsumer<getDrugsDataCubit, getDrugsDataStatus>(
-                  listener: (context, state) {},
-                  builder: (context, state) {
-                    if(state is getDrugsDataSucessState)
-                      {
-                        getDrugsDataCubit.get(context).getDepartmentsData();
-                      }
-                    return Scaffold(
-                      appBar: CustomAppBar(title:isArabicsaved?'الروشته': 'prescreption'),
-                      backgroundColor:
-                          isDarkmodesaved ? Color(0xff232323) : Colors.grey[50],
-                      body: Padding(
-                        padding: const EdgeInsets.all(18.0),
-                        child: SingleChildScrollView(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 20),
-                              Text(
-                                isArabicsaved?'التشخيص':'Examination',
-                                style: TextStyle(
-                                    color: isDarkmodesaved? Colors.white:Colors.black45,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: CustomwhiteContainer(
-                                  child:
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child:
-                                    DropdownSearch<String>(
-                                      items: getDrugsDataCubit.get(context).departments.map((drug) => drug['NAME'] as String).toList(),
-                                      onChanged: (value) {
-                                        getDrugsDataCubit.get(context).selectUser(value!); // Update selected drug in Cubit
-                                      },
-                                      selectedItem: getDrugsDataCubit.get(context).selectedDrug,
-                                    ),
-                                                                ),
+                  return Scaffold(
+                    appBar: CustomAppBar(title:isArabicsaved?'الروشته': 'prescreption'),
+                    backgroundColor:
+                    isDarkmodesaved ? Color(0xff232323) : Colors.grey[50],
+                    body: Padding(
+                      padding: const EdgeInsets.all(18.0),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 20),
+                            Text(
+                              'Examination',
+                              style: TextStyle(
+                                  color: isDarkmodesaved? Colors.white:Colors.black45,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: CustomwhiteContainer(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Autocomplete<Map<String, dynamic>>(
+                                    optionsBuilder: (textEditingValue) {
+                                      return getDrugsDataCubit
+                                          .get(context)
+                                          .departments
+                                          .where((drug) => drug['Disease_name']
+                                          .toLowerCase()
+                                          .contains(textEditingValue.text
+                                          .toLowerCase()));
+                                    },
+                                    displayStringForOption: (option) =>
+                                    option['Disease_name'],
+                                    onSelected:
+                                        (selectedItem) {context.read<getDrugsDataCubit>().selectUser(selectedItem['Disease_name']);ExaminationController.text = selectedItem['Disease_name'];
+                                      getDrugsDataCubit.get(context).getDrugsdata();
+                                    },
+                                    fieldViewBuilder: (context, controller,
+                                        focusNode, onFieldSubmitted) {
+                                      // Use the persistent controller
+                                      controller.text =
+                                          ExaminationController.text;
+                                      return TextField(
+                                        style: TextStyle(color: isDarkmodesaved? Colors.white:Colors.black45),
+                                        controller: controller,
+                                        focusNode: focusNode,
+                                        decoration: InputDecoration(
+                                          hintStyle: TextStyle(
+                                              color: isDarkmodesaved
+                                                  ? Colors.white
+                                                  : Colors.black54),
+                                          border: InputBorder.none,
+                                          hintText: ExaminationController
+                                              .text.isNotEmpty
+                                              ? ExaminationController.text
+                                              : 'Enter Examination',
+                                        ),
+                                        onChanged: (value) {
+                                          ExaminationController.text = value;
+                                        },
+                                      );
+                                    },
+                                  ),
                                 ),
                               ),
-                              Text(
-                                isArabicsaved?'الادويه':'Drugs',
-                                style: TextStyle(
-                                    color: isDarkmodesaved? Colors.white:Colors.black45,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              BlocBuilder<MedsCubit, MedsState>(
-                                builder: (context, state) {
-                                  final controllers = state.controllers;
-                                  final timesPerDayControllers =
-                                      state.timesPerDayControllers;
-                                  final daysControllers = state.daysControllers;
+                            ),
+                            Text(
+                              'Drugs',
+                              style: TextStyle(
+                                  color: isDarkmodesaved? Colors.white:Colors.black45,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            BlocBuilder<MedsCubit, MedsState>(
+                              builder: (context, state) {
+                                final controllers = state.controllers;
+                                final timesPerDayControllers =
+                                    state.timesPerDayControllers;
+                                final daysControllers = state.daysControllers;
 
-                                  if (controllers.length !=
-                                          timesPerDayControllers.length ||
-                                      controllers.length !=
-                                          daysControllers.length) {
-                                    return Center(
-                                        child: Text('Controllers length mismatch'));
-                                  }
+                                if (controllers.length !=
+                                    timesPerDayControllers.length ||
+                                    controllers.length !=
+                                        daysControllers.length) {
+                                  return Center(
+                                      child: Text('Controllers length mismatch'));
+                                }
 
-                                  return Screenshot(
-                                    controller: screenshotController,
-                                    child: SingleChildScrollView(
-                                      child: Column(
-                                        children: [
-                                          ListView.builder(
-                                            physics: NeverScrollableScrollPhysics(),
-                                            shrinkWrap: true,
-                                            itemCount: controllers.length,
-                                            itemBuilder: (context, index) {
-                                              if (index <
-                                                      timesPerDayControllers
-                                                          .length &&
-                                                  index < daysControllers.length) {
-                                                final controller2 =
-                                                    timesPerDayControllers[index];
-                                                final controller3 =
-                                                    daysControllers[index];
-                                                final controller4 =
-                                                    controllers[index];
-                                                return Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: MedsItem(
-                                                    daysController: controller2,
-                                                    nameController: controller4,
-                                                    timesPerDayController:
-                                                        controller3,
-                                                    index: index,
-                                                  ),
-                                                );
-                                              } else {
-                                                return SizedBox.shrink();
-                                              }
-                                            },
-                                          ),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              IconButton(
-                                                icon: Icon(
-                                                  CupertinoIcons.add_circled,
-                                                  size: 30,
-                                                  color: isDarkmodesaved
-                                                      ? Colors.white
-                                                      : Colors.black54,
+                                return Screenshot(
+                                  controller: screenshotController,
+                                  child: SingleChildScrollView(
+                                    child: Column(
+                                      children: [
+                                        ListView.builder(
+                                          physics: NeverScrollableScrollPhysics(),
+                                          shrinkWrap: true,
+                                          itemCount: controllers.length,
+                                          itemBuilder: (context, index) {
+                                            print(state.medications.length);
+                                            if (index <
+                                                timesPerDayControllers
+                                                    .length &&
+                                                index < daysControllers.length) {
+                                              final controller2 =
+                                              timesPerDayControllers[index];
+                                              final controller3 =
+                                              daysControllers[index];
+                                              final controller4 =
+                                              controllers[index];
+                                              return Padding(
+                                                padding:
+                                                const EdgeInsets.all(8.0),
+                                                child: MedsItem(
+                                                  daysController: controller2,
+                                                  nameController: controller4,
+                                                  timesPerDayController:
+                                                  controller3,
+                                                  index: index,
                                                 ),
-                                                onPressed: () {
-                                                  context
-                                                      .read<MedsCubit>()
-                                                      .addMed();
-                                                },
+                                              );
+                                            } else {
+                                              return SizedBox.shrink();
+                                            }
+                                          },
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                          children: [
+                                            IconButton(
+                                              icon: Icon(
+                                                CupertinoIcons.add_circled,
+                                                size: 30,
+                                                color: isDarkmodesaved
+                                                    ? Colors.white
+                                                    : Colors.black54,
                                               ),
-                                              Text(
-                                                isArabicsaved?
-                                                    'دوا جديد':'New drug',
-                                                style: TextStyle(
-                                                  color: isDarkmodesaved? Colors.white:Colors.black45,
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
+                                              onPressed: () {
+                                                context
+                                                    .read<MedsCubit>()
+                                                    .addMed();
+                                              },
+                                            ),
+                                            Text(
+                                              'New drug',
+                                              style: TextStyle(
+                                                color: isDarkmodesaved? Colors.white:Colors.black45,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold,
                                               ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
                         ),
                       ),
-                    );
-                  },
-                ),
-                floatingActionButton: GestureDetector(
-                  onTap: () {
-                    context.read<MedsCubit>().getMedications();
-                    _handleAddButton(context, state);
-                  },
-                  child: CustomblueContainer(
-                    height: 60,
-                    width: 60,
-                    child: Icon(
-                      Icons.save,
-                      color: Colors.white,
                     ),
+                  );
+                },
+              ),
+              floatingActionButton: GestureDetector(
+                onTap: () {
+                  context.read<MedsCubit>().getMedications();
+                  _handleAddButton(context, state);
+                  print(state.medications.length);
+                  print(serviceonly);
+                },
+                child: CustomblueContainer(
+                  height: 60,
+                  width: 60,
+                  child: Icon(
+                    Icons.save,
+                    color: Colors.white,
                   ),
                 ),
               ),
@@ -229,7 +259,7 @@ class addnew extends StatelessWidget {
     if (lastIndex < 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('No Meds available to add medication'),
+          content: Text('No controllers available to add medication'),
           backgroundColor: Colors.red,
         ),
       );
@@ -242,22 +272,19 @@ class addnew extends StatelessWidget {
     if (newMedicationName.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(isArabicsaved?
-          'لا يمكن اضافه حقل فارغ':'Medication name cannot be empty'),
+          content: Text('Medication name cannot be empty'),
           backgroundColor: Colors.red,
         ),
       );
       return;
     }
     final isDuplicate =
-        currentState.medications.any((med) => med['name'] == newMedicationName);
+    currentState.medications.any((med) => med['name'] == newMedicationName);
 
     if (isDuplicate) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-              isArabicsaved?
-                  'دواء مكرر':'Medication is duplicated'),
+          content: Text('Medication is duplicated'),
           backgroundColor: Colors.red,
         ),
       );
@@ -271,83 +298,75 @@ class addnew extends StatelessWidget {
           child: AlertDialog(
             shadowColor: Colors.grey,
             backgroundColor: Colors.grey.withOpacity(0.4),
-            title: Directionality(
-              textDirection: isArabicsaved ? TextDirection.rtl : TextDirection.ltr,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('$patientname',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold)),
-                  Text('${DateNow.substring(0, 10)}',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold)),
-                  Text(isArabicsaved?'كود : $patientcode':'code: $patientcode',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold)),
-                ],
-              ),
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('$patientname',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold)),
+                Text('${DateNow.substring(0, 10)}',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold)),
+                Text('code: $patientcode',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold)),
+              ],
             ),
-            contentPadding: isArabicsaved?EdgeInsets.only(right: 25, top: 8):EdgeInsets.only(left: 19, top: 8),
-            content: Directionality(
-              textDirection: isArabicsaved ? TextDirection.rtl : TextDirection.ltr,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    isArabicsaved?
-                    'التشخيص :':'Examination: ',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+            contentPadding: EdgeInsets.only(left: 19, top: 8),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Examination: ',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                   ),
-                  Text(
-                    '     ${ExaminationController.text}',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
+                ),
+                Text(
+                  '     ${ExaminationController.text}',
+                  style: TextStyle(
+                    color: Colors.white,
                   ),
-                  Text(
-                    isArabicsaved?
-                    'الادويه :':'Drugs:',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                ),
+                Text(
+                  'Drugs:',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                   ),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(), // Prevent scrolling
-                    itemCount: medications.length,
-                    itemBuilder: (context, index) {
-                      final med = medications[index];
-                      return ListTile(
-                        title: Text(
-                          '${index + 1}- ${med['name'] ?? 'Unnamed Medicine'}',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        subtitle: Text(
-                        isArabicsaved?  '${med['timesPerDay'] ?? 'N/A'} مرات لمده ${med['days'] ?? 'N/A'} ايام ': '${med['timesPerDay'] ?? 'N/A'} Times per day for ${med['days'] ?? 'N/A'} Days ',
-                          style: TextStyle(color: Colors.white60),
-                        ),
-                      );
-                    },
-                  ),
-                  SizedBox(
-                    height: 12,
-                  )
-                ],
-              ),
+                ),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(), // Prevent scrolling
+                  itemCount: medications.length,
+                  itemBuilder: (context, index) {
+                    final med = medications[index];
+                    return ListTile(
+                      title: Text(
+                        '${index + 1}- ${med['name'] ?? 'Unnamed Medicine'}',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      subtitle: Text(
+                        '${med['timesPerDay'] ?? 'N/A'} Times per day for ${med['days'] ?? 'N/A'} Days ',
+                        style: TextStyle(color: Colors.white60),
+                      ),
+                    );
+                  },
+                ),
+                SizedBox(
+                  height: 12,
+                )
+              ],
             ),
             actions: [
               Row(
@@ -446,3 +465,4 @@ class addnew extends StatelessWidget {
     return false; // Prevent the default back navigation
   }
 }
+

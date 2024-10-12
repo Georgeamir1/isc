@@ -82,6 +82,7 @@ class getDepartmentsDataErrorState extends getDrugsDataStatus {
 }
 class getDrugsDataLoadingState extends getDrugsDataStatus {}
 class getDrugsDataInitState extends getDrugsDataStatus {}
+class newDrugsDataSucessState extends getDrugsDataStatus {}
 class getDrugsDataSucessState extends getDrugsDataStatus {
   final List<Map<String, dynamic>> Drugs;
 
@@ -449,6 +450,7 @@ abstract class DrugClinicState {}
 class DrugClinicInitialState extends DrugClinicState {}
 
 class DrugClinicLoadingState extends DrugClinicState {}
+class newDrugSuccessState extends DrugClinicState {}
 
 class DrugClinicSuccessState extends DrugClinicState {
   final List<DrugClinic> drugList;

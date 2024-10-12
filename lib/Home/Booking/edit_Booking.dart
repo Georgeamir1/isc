@@ -103,7 +103,7 @@ class EditBooking extends StatelessWidget {
                                   '${patientname}',
                                   style: TextStyle(
                                       fontSize: 24,
-                                      fontWeight: FontWeight.bold,
+                                      fontWeight: FontWeight.bodld,
                                       color: isDarkmodesaved ? Colors.white : Colors.black54),
                                   textAlign: TextAlign.center,
                                 ),
@@ -147,7 +147,7 @@ class EditBooking extends StatelessWidget {
                                     dropdownDecoratorProps: DropDownDecoratorProps(
                                       dropdownSearchDecoration: InputDecoration(
                                         contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                                        hintText: Contact == "null" ? (isArabicsaved ? "اختر جهة الاتصال" : "Choose contact") : "$Contact ",
+                                        hintText: Contact == null ? (isArabicsaved ? "اختر جهة الاتصال" : "Choose contact") : "$Contact ",
                                         hintStyle: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             color: isDarkmodesaved ? Colors.white : Colors.black54),
@@ -245,6 +245,7 @@ class EditBooking extends StatelessWidget {
                               onPressed: () {
                                 BookingCubit.get(context).Deletbookoing();
                                 navigateToPage(context, BookingList());
+
                               },
                               child: Text(
                                 isArabicsaved ? 'حذف' : 'Delete',
@@ -275,7 +276,6 @@ class EditBooking extends StatelessWidget {
                                 ),
                               ),
                               onPressed: () {
-                                print(Date);
                                 BookingCubit.get(context).editBookin(
                                   time: Date,
                                   DayType: DayType,
@@ -285,9 +285,10 @@ class EditBooking extends StatelessWidget {
                                   No: selectedNo,
                                   Contact: Contact,
                                 );
+                                navigateToPage(context, BookingList());
                                 Date = null;
                                 Contact = null;
-                                navigateToPage(context, BookingList());
+
                               },
                               child: Text(
                                 isArabicsaved ? 'تحديث' : 'Update',

@@ -28,7 +28,7 @@ class getDataCubit extends Cubit<getLoginDataStates> {
   void getdata() async {
     try {
       emit(getLoginDataLoadingState());
-      final response = await DioHelper.getData(url: 'http://192.168.1.88/api/users/');
+      final response = await DioHelper.getData(url: 'http://192.168.1.198/api/users/');
       final data = response.data;
       _users = List<Map<String, dynamic>>.from(data);
       userslength = _users.length;
@@ -68,7 +68,7 @@ class getDataCubit extends Cubit<getLoginDataStates> {
     emit(LoadingNewUser());
 
     DioHelper.postData(
-      url: 'http://192.168.1.88/api/users/',
+      url: 'http://192.168.1.198/api/users/',
       data: {
         'USER_ID': ID ?? '',
         'User_Name': UerName ?? '',
@@ -139,7 +139,7 @@ class getDoctorDataCubit extends Cubit<getDoctorDataStatus> {
     emit(NewDoctorLoadingState());
 
     DioHelper.postData(
-      url: 'http://192.168.1.88/api/Doctor',
+      url: 'http://192.168.1.198/api/Doctor',
       data: {
         'DOC': ID ?? '',
         'NAME': UerName ?? '',
@@ -160,7 +160,7 @@ class getDoctorDataCubit extends Cubit<getDoctorDataStatus> {
 
   void getdata() async {
     String url =
-        'http://192.168.1.88/api/secudleout/filtered/$ClinicID/';
+        'http://192.168.1.198/api/secudleout/filtered/$ClinicID/';
     try {
       emit(getDoctorDataLoadingState());
 
@@ -177,7 +177,7 @@ class getDoctorDataCubit extends Cubit<getDoctorDataStatus> {
   }
   void getDoctors() async {
     String url =
-        'http://192.168.1.88/api/DOCTOR';
+        'http://192.168.1.198/api/DOCTOR';
     try {
       emit(getDoctorDataLoadingState());
 
@@ -212,7 +212,7 @@ class getpatientDataCubit extends Cubit<getpatientDataStatus> {
   void getdata() async {
     if (patientcode2 == null || patientcode2!.isEmpty) return;
 
-    String url = 'http://192.168.1.88/api/Patient/filtered/$ClinicID/$patientcode2';
+    String url = 'http://192.168.1.198/api/Patient/filtered/$ClinicID/$patientcode2';
 
     try {
       emit(getpatientDataLoadingState());
@@ -243,7 +243,7 @@ class getpatientDataCubit extends Cubit<getpatientDataStatus> {
   }
 
   void getpatientsdata() async {
-    String url = 'http://192.168.1.88/api/Patient/filtered/$ClinicID/';
+    String url = 'http://192.168.1.198/api/Patient/filtered/$ClinicID/';
     try {
       emit(getpatientDataLoadingState());
       final response = await DioHelper.getData(url: url);
@@ -275,7 +275,7 @@ class getpatientDataCubit extends Cubit<getpatientDataStatus> {
     emit(getpatientDataLoadingState());
 
     DioHelper.postData(
-      url: 'http://192.168.1.88/api/Patient/',
+      url: 'http://192.168.1.198/api/Patient/',
       data: {
         'NAME': PatientName ?? '',
         'id_NO': NationalID ?? '',
@@ -308,7 +308,7 @@ class BookingCubit extends Cubit<Bookingtatus> {
   bool _isOption1Selected = false;
   Map<String, dynamic>? _data;
 
-  String url = 'http://192.168.1.88/api/secudleout/$selectedNo';
+  String url = 'http://192.168.1.198/api/secudleout/$selectedNo';
 
   void Deletbookoing() {
     print(url);
@@ -331,7 +331,7 @@ class BookingCubit extends Cubit<Bookingtatus> {
     emit(BookingLoadingState());
 
     DioHelper.postData(
-      url: 'http://192.168.1.88/api/SecudleOut/',
+      url: 'http://192.168.1.198/api/SecudleOut/',
       data: {
         'OPERATOR': Doctorname ?? '',
         'op_code': StringselectedUserID ?? '',
@@ -342,7 +342,7 @@ class BookingCubit extends Cubit<Bookingtatus> {
         'pat_code': patcode ?? '',
         'day_typ': DayType ?? '',
         'cont_name': Contact ?? 'Private',
-        'pcode': reservationslenth + 1,
+        'pcode': reservationslenth + 1??1,
         'id_clinic':id_clinic??''
       },
     ).catchError((error) {
@@ -374,7 +374,7 @@ class BookingCubit extends Cubit<Bookingtatus> {
     emit(BookingLoadingState());
 
     DioHelper.putData(
-      url: 'http://192.168.1.88/api/SecudleOut/$selectedNo',
+      url: 'http://192.168.1.198/api/SecudleOut/$selectedNo',
       data: {
         'no': No ?? '',
         'OPERATOR': Doctorname ?? '',
@@ -386,6 +386,7 @@ class BookingCubit extends Cubit<Bookingtatus> {
         'pat_code': patcode ?? '',
         'day_typ': DayType ?? '',
         'cont_name': Contact ?? '',
+        'id_clinic': ClinicID ?? '',
       },
     ).catchError((error) {
       print(error);
@@ -438,7 +439,7 @@ class getContactDataCubit extends Cubit<getContactDataStates> {
     try {
       emit(getContactDataLoadingState());
       final response = await DioHelper.getData(
-          url: 'http://192.168.1.88/api/Contact/filtered');
+          url: 'http://192.168.1.198/api/Contact/filtered');
       final data = response.data as List<dynamic>;
       Contacts =
           data.map<String>((contact) => contact['NAME'] as String).toList();
@@ -508,9 +509,7 @@ class ChoiceChipCubit extends Cubit<ChoiceChipState> {
 }
 
 //..............................................................................
-//..............................................................................
-//..............................................................................
-//..............................................................................
+
 class MedsCubit extends Cubit<MedsState> {
   MedsCubit() : super(MedsState.initial());
 
@@ -526,7 +525,7 @@ class MedsCubit extends Cubit<MedsState> {
   }) async {
     try {
       await DioHelper.postData(
-        url: 'http://192.168.1.88/api/medRec2',
+        url: 'http://192.168.1.198/api/medRec2/',
         data: {
           'use_nam_ar':use_nam_ar,
           'qty':qty,
@@ -552,12 +551,12 @@ class MedsCubit extends Cubit<MedsState> {
   void addMed() {
     final currentState = state;
 
-    // Check if we have at least one controller (if the list is empty, we allow adding the first item)
+    // Check if there is at least one controller
     if (currentState.controllers.isNotEmpty) {
       final lastIndex = currentState.controllers.length - 1;
 
       final medNameController = currentState.controllers[lastIndex];
-      final newMedicationName = medNameController.text;
+      final newMedicationName = medNameController.text.trim();
 
       // Check if the medication name field is empty
       if (newMedicationName.isEmpty) {
@@ -565,17 +564,21 @@ class MedsCubit extends Cubit<MedsState> {
         return;
       }
 
-      // Check for duplicate medications
-      final isDuplicate = currentState.medications.any((med) => med['name'] == newMedicationName);
+      // Ensure no duplicate medication names (case insensitive and trimmed)
+      final isDuplicate = currentState.medications.any(
+              (med) => med['name']?.trim().toLowerCase() == newMedicationName.toLowerCase()
+      );
+
       if (isDuplicate) {
-        emit(currentState.copyWith(error: 'Medication is duplicated'));
+        emit(currentState.copyWith(error: 'This medication already exists.'));
         return;
       }
 
-      // Add the medication to the list
+      // Proceed to add the new medication to the list
       final updatedMedications = List<Map<String, String>>.from(currentState.medications)
         ..add({'name': newMedicationName});
 
+      // Emit updated state with the new medication
       emit(currentState.copyWith(
         medications: updatedMedications,
         error: null,
@@ -638,7 +641,7 @@ class MedsCubit extends Cubit<MedsState> {
         final timesPerDay = state.timesPerDayControllers[i].text;
         final days = state.daysControllers[i].text;
 
-        if (name.isNotEmpty && timesPerDay.isNotEmpty && days.isNotEmpty) {
+        if (name.isNotEmpty ) {
           medications.add({
             'name': name,
             'timesPerDay': timesPerDay,
@@ -805,17 +808,75 @@ class getDrugsDataCubit extends Cubit<getDrugsDataStatus> {
   getDrugsDataCubit() : super(getDrugsDataInitState());
 
   static getDrugsDataCubit get(context) => BlocProvider.of(context);
+  Future<void>   NewDrug({
+    required String? NAME,
+    required int? noo,
+
+  }) async
+  {
+    try {
+      emit(getDrugsDataLoadingState()); // Emit loading state
+
+      await     DioHelper.postData(
+        url: 'http://192.168.1.198/api/drugClinic/',
+        data: {
+          'E_DESC': NAME ?? '',
+          'noo': noo ?? '',
+          'id_clinic': ClinicID ?? '',
+        },
+      ).catchError((error) {
+        print(error);
+        emit(getDrugsDataErrorState(error.toString()));
+      });
+
+
+      // Emit success state after successful data posting
+      emit(newDrugsDataSucessState());
+    } catch (error) {
+      print(error);
+      emit(getDrugsDataErrorState(error.toString()));
+    }
+  }
+  Future<void>   NewExamination({
+    required String? NAME,
+    required int? noo,
+
+  }) async
+  {
+    try {
+      emit(getDrugsDataLoadingState()); // Emit loading state
+
+      await     DioHelper.postData(
+        url: 'http://192.168.1.198/api/medDis',
+        data: {
+          'Disease_name': NAME ?? '',
+          'Disease_no': noo ?? '',
+          'id_clinic': ClinicID ?? '',
+        },
+      ).catchError((error) {
+        print(error);
+        emit(getDrugsDataErrorState(error.toString()));
+      });
+
+
+      // Emit success state after successful data posting
+      emit(newDrugsDataSucessState());
+    } catch (error) {
+      print(error);
+      emit(getDrugsDataErrorState(error.toString()));
+    }
+  }
+
+
 
   void getDrugsdata() async {
     try {
       emit(getDrugsDataLoadingState());
-      final response = await DioHelper.getData(
-          url: 'http://192.168.1.88/api/drugClinic/filtered/$ClinicID');
+      final response = await DioHelper.getData(url: 'http://192.168.1.198/api/drugClinic/filtered/');
       final data = response.data;
 
       if (data is List) {
         Drugs = data.map((item) => Map<String, dynamic>.from(item)).toList();
-        print('Drugs loaded: $Drugs'); // Debug print
         emit(getDrugsDataSucessState(Drugs));
       } else {
         throw Exception('Unexpected data format');
@@ -830,7 +891,7 @@ class getDrugsDataCubit extends Cubit<getDrugsDataStatus> {
     try {
       emit(getDrugsDataLoadingState());
       final response = await DioHelper.getData(
-          url: 'http://192.168.1.88/api/hosDept/filtered/$ClinicID');
+          url: 'http://192.168.1.198/api/medDis/filtered/');
       final data = response.data;
 
       if (data is List) {
@@ -850,7 +911,7 @@ class getDrugsDataCubit extends Cubit<getDrugsDataStatus> {
     try {
       emit(getDepartmentsDataLoadingState());
       final response = await DioHelper.getData(
-          url: 'http://192.168.1.88/api/hosDept/filtered/2');
+          url: 'http://192.168.1.198/api/medDis/filtered/');
       final data = response.data;
       print(data);
 
@@ -890,11 +951,30 @@ class getDrugsDataCubit extends Cubit<getDrugsDataStatus> {
 class DrugClinicCubit extends Cubit<DrugClinicState> {
   final Dio _dio;
   DrugClinicCubit(this._dio) : super(DrugClinicInitialState());
+  void NewDrug({
+    required String? NAME,
+    required int? noo,
+
+  })
+  {
+    DioHelper.postData(
+      url: 'http://192.168.1.198/api/drugClinic/',
+      data: {
+        'E_DESC': NAME ?? '',
+        'noo': noo ?? '',
+        'id_clinic': ClinicID ?? '',
+      },
+    ).catchError((error) {
+      print(error);
+      emit(DrugClinicErrorState('An error occurred: $error'));
+    });
+    emit(newDrugSuccessState());
+  }
 
   Future<void> fetchDrugClinicData() async {
     emit(DrugClinicLoadingState());
     try {
-      final response = await _dio.get('http://192.168.1.88/api/drugClinic/filtered/$ClinicID');
+      final response = await _dio.get('http://192.168.1.198/api/drugClinic/filtered/');
 
       if (response.statusCode == 200) {
         List<dynamic> data = response.data;
@@ -931,9 +1011,6 @@ class DrugClinic {
 
 //..............................................................................
 
-
-
-//..............................................................................
 class HospitalDepartment {
   final int category;
   final String name;
@@ -952,7 +1029,7 @@ class HospitalDepartment {
   factory HospitalDepartment.fromJson(Map<String, dynamic> json) {
     return HospitalDepartment(
       category: json['CATEGORY'] ?? 0,
-      name: json['NAME'] ?? '',
+      name: json['Disease_name'] ?? 'kk',
       nameEnglish: json['name_e'] ?? '',
       remark: json['remark'],
       idClinic: json['id_clinic'] ?? 0,
@@ -970,25 +1047,24 @@ class HospitalDepartmentCubit extends Cubit<HospitalDepartmentState> {
   Future<void> fetchHospitalDepartments() async {
     emit(HospitalDepartmentLoadingState());
     try {
-      final response = await dio.get('http://192.168.1.88/api/hosDept/filtered/');
+      final response = await dio.get('http://192.168.1.198/api/medDis/filtered/');
       departments = (response.data as List).map((dept) => HospitalDepartment.fromJson(dept)).toList();
       emit(HospitalDepartmentLoadedState(departments!));
     } catch (error) {
       emit(HospitalDepartmentErrorState(error.toString()));
     }
   }
-  void NewHospitalDepartment({
+  void NewDrug({
     required String? NAME,
-    required String? remark,
+    required int? noo,
 
   }) {
     DioHelper.postData(
-      url: 'http://192.168.1.88/api/hosDept/',
+      url: 'http://192.168.1.198/api/drugClinic/',
       data: {
-        'NAME': NAME ?? '',
-        'remark': remark ?? '',
+        'E_DESC': NAME ?? '',
+        'noo': noo ?? '',
         'id_clinic': ClinicID ?? '',
-
       },
     ).catchError((error) {
       print(error);
@@ -1079,7 +1155,7 @@ class CombinedDateCubit2 extends Cubit<CombinedDateState2> {
 
       // Fetching data from different APIs
       final prescriptionsDateCodePairs = await _fetchAndExtractDateCodePairs(
-        'http://192.168.1.88/api/medrec2/',
+        'http://192.168.1.198/api/medrec2/',
         (item) => (isArabicsaved?'دواء:  : ${item['drug_name']}':'Drugs : ${item['drug_name']}') ?? 'Unknown Date',
         (item) => item['code'].toString() ?? 'Unknown Code',
         (item) => item['doc_no'].toString() ?? 'Unknown Doc No',
@@ -1088,7 +1164,7 @@ class CombinedDateCubit2 extends Cubit<CombinedDateState2> {
       );
 
       final recordsDateCodePairs = await _fetchAndExtractDateCodePairs(
-        'http://192.168.1.88/api/medrec1/',
+        'http://192.168.1.198/api/medrec1/',
         (item) => (isArabicsaved?'شكوي :${item['sub_comp_name']}':'Complain : ${item['sub_comp_name']}') ?? 'Unknown Date',
         (item) => item['CODE'].toString() ?? 'Unknown Code',
         (item) => item['DOC_NO'].toString() ?? 'Unknown Doc No',
@@ -1097,7 +1173,7 @@ class CombinedDateCubit2 extends Cubit<CombinedDateState2> {
       );
 
       final servicesDateCodePairs = await _fetchAndExtractDateCodePairs(
-        'http://192.168.1.88/api/medrec3/',
+        'http://192.168.1.198/api/medrec3/',
         (item) => (isArabicsaved?'خدمه : ${item['ser_name']}':'Service : ${item['ser_name']}') ?? 'Unknown Date',
         (item) => item['code'].toString() ?? 'Unknown Code',
         (item) => item['doc_no'].toString() ?? 'Unknown Doc No',
@@ -1106,7 +1182,7 @@ class CombinedDateCubit2 extends Cubit<CombinedDateState2> {
       );
 
       final medrec4DateCodePairs = await _fetchAndExtractDateCodePairs(
-        'http://192.168.1.88/api/medrec4/',
+        'http://192.168.1.198/api/medrec4/',
         (item) => (isArabicsaved?'تشخيص: ${item['dis_name']}':'Examination : ${item['dis_name']}') ?? 'Unknown Date',
         (item) => item['code'].toString() ?? 'Unknown Code',
         (item) => item['doc_no'].toString() ?? 'Unknown Doc No',
@@ -1115,7 +1191,7 @@ class CombinedDateCubit2 extends Cubit<CombinedDateState2> {
       );
 
       final surgerysDateCodePairs = await _fetchAndExtractDateCodePairs(
-        'http://192.168.1.88/api/medSurgey/',
+        'http://192.168.1.198/api/medSurgey/',
         (item) => (isArabicsaved?'جراحه: ${item['sur_nam_e']}':'Surgery : ${item['sur_nam_e']}') ?? 'Unknown Date',
         (item) => item['pcode'].toString() ?? 'Unknown Code',
         (item) => item['doc_no'].toString() ?? 'Unknown Doc No',
@@ -1202,7 +1278,7 @@ class GetExaminationDateCubit extends Cubit<GetExaminationDataStatus> {
   List<dynamic> allExaminations = [];
   Map<String, List<dynamic>> groupedExaminations = {};
   String filterCode = '';
-  String url = 'http://192.168.1.88/api/medRec4/';
+  String url = 'http://192.168.1.198/api/medRec4/';
   GetExaminationDateCubit() : super(GetExaminationDataInitState());
   static GetExaminationDateCubit get(context) => BlocProvider.of(context);
   void getdata() async {
@@ -1260,7 +1336,7 @@ class GetExaminationDateCubit extends Cubit<GetExaminationDataStatus> {
       emit(GetExaminationDataLoadingState()); // Emit loading state
 
       await DioHelper.postData(
-        url: ('http://192.168.1.88/api/medRec1'),
+        url: ('http://192.168.1.198/api/medRec1'),
         data: {
           'pict1': Image ?? '',
 
@@ -1302,7 +1378,7 @@ class GetservicesDateCubit extends Cubit<GetServiceDataStatus> {
   List<dynamic> allServices = [];
   Map<String, List<dynamic>> groupedServices = {};
   String filterCode = '';
-  String url = 'http://192.168.1.88/api/medRec3/';
+  String url = 'http://192.168.1.198/api/medRec3/';
 
   GetservicesDateCubit() : super(GetServiceDataInitState());
 
@@ -1399,7 +1475,7 @@ class GetPrescreptionDateCubit extends Cubit<GetPrescreptionDataStatus> {
   static GetPrescreptionDateCubit get(context) => BlocProvider.of(context);
 
   void getdata() async {
-    String url = 'http://192.168.1.88/api/medRec2/';
+    String url = 'http://192.168.1.198/api/medRec2/';
     try {
       emit(GetPrescreptionDataLoadingState());
       final response = await DioHelper.getData(url: url);
@@ -1428,7 +1504,7 @@ class GetPrescreptionDateCubit extends Cubit<GetPrescreptionDataStatus> {
       emit(GetPrescreptionDataLoadingState()); // Emit loading state
 
       await DioHelper.postData(
-        url: 'http://192.168.1.88/api/medRec2',
+        url: 'http://192.168.1.198/api/medRec2',
         data: {
           'pat_name': PatientName ?? '',
           'code': patcode ?? '',
@@ -1505,7 +1581,7 @@ class GetimageDateCubit extends Cubit<GetExaminationDataStatus> {
   List<dynamic> allimages = [];
   Map<String, List<dynamic>> groupedimages = {};
   String filterCode = '';
-  String url = 'http://192.168.1.88/api/medRec1/';
+  String url = 'http://192.168.1.198/api/medRec1/';
   GetimageDateCubit() : super(GetExaminationDataInitState());
   static GetExaminationDateCubit get(context) => BlocProvider.of(context);
   void getdata() async {
