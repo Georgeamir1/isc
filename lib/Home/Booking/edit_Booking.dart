@@ -103,7 +103,7 @@ class EditBooking extends StatelessWidget {
                                   '${patientname}',
                                   style: TextStyle(
                                       fontSize: 24,
-                                      fontWeight: FontWeight.bodld,
+                                      fontWeight: FontWeight.bold,
                                       color: isDarkmodesaved ? Colors.white : Colors.black54),
                                   textAlign: TextAlign.center,
                                 ),
