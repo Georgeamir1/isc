@@ -488,3 +488,31 @@ class UploadImageErrorState extends UploadImageState {
   final String error;
   UploadImageErrorState({required this.error});
 }
+//............................................................................
+// States.dart
+abstract class UploadMedicalRecordStatus {}
+
+class UploadMedicalRecordInitialState extends UploadMedicalRecordStatus {}
+
+class UploadDrugsRecordLoadingState extends UploadMedicalRecordStatus {}
+class UploadExaminationsRecordLoadingState extends UploadMedicalRecordStatus {}
+class UploadServicesRecordLoadingState extends UploadMedicalRecordStatus {}
+
+class UploadExaminationsRecordSuccessState extends UploadMedicalRecordStatus {}
+class UploadDrugsRecordSuccessState extends UploadMedicalRecordStatus {}
+class UploadServicesRecordSuccessState extends UploadMedicalRecordStatus {}
+
+class UploadExaminationsErrorState extends UploadMedicalRecordStatus {
+  final String error;
+  UploadExaminationsErrorState(this.error);
+}
+class UploadDrugsRecordErrorState extends UploadMedicalRecordStatus {
+  final String error;
+
+  UploadDrugsRecordErrorState(this.error);
+}
+class UploadServicesRecordErrorState extends UploadMedicalRecordStatus {
+  final String error;
+
+  UploadServicesRecordErrorState(this.error);
+}

@@ -2,6 +2,7 @@ import 'package:conditional_builder_null_safety/conditional_builder_null_safety.
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isc/Home/Medical_Records/meds.dart';
+import 'package:isc/Home/home/updateMedicalRecords.dart';
 import '../../State_manage/Cubits/cubit.dart';
 import '../../State_manage/States/States.dart';
 import '../../shared/Data.dart';
@@ -512,6 +513,7 @@ class MedicalRecords extends StatelessWidget {
                                                       ),
                                                       onLongPress: () {
                                                         print('${group.dateCodePairs.first.docno}');
+                                                        navigateToPage(context, UpdateMedicalRecords(docno: group.dateCodePairs.first.docno));
                                                       },
                                                     ),
                                                   ),

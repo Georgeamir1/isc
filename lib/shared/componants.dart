@@ -1117,7 +1117,7 @@ class PatientCodeSearchDelegate extends SearchDelegate {
 }
 //..............................................................................
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final String title;
+  final String title ;
   final double height;
   final List<Color> gradientColors;
   final TextStyle titleStyle;
@@ -1130,7 +1130,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final List<Color>? color;
 
   CustomAppBar({
-    required this.title,
+    this.title ='',
     this.height = 72.0,
     this.gradientColors = const [Colors.lightBlue, Colors.indigo],
     this.titleStyle = const TextStyle(
@@ -1162,6 +1162,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         color: color,
         height: 100,
         child: AppBar(
+
           automaticallyImplyLeading: false,
           backgroundColor: backgroundColor,
           elevation: elevation,
@@ -1421,6 +1422,93 @@ class MedicalRecordsItem extends StatelessWidget {
 
           ],
         )
+    );
+  }
+}
+//..............................................................................
+
+
+class EditDrugItem extends StatelessWidget {
+  final String? initialDrugName;
+  final Function(String? newValue) onChanged;
+  final Function() onEdit;
+
+  const EditDrugItem({
+    Key? key,
+    required this.initialDrugName,
+    required this.onChanged,
+    required this.onEdit,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    String? selectedDrug = initialDrugName; // Store selected drug
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          Expanded(
+            child: BlocBuilder<getDrugsDataCubit, getDrugsDataStatus>(
+              builder: (context, state) {
+                if (state is getDrugsDataLoadingState) {
+                  return CircularProgressIndicator(); // Show loading indicator
+                } else if (state is getDrugsDataErrorState) {
+                  return Text('Error loading drugs'); // Error message
+                } else if (state is getDrugsDataSucessState) {
+                  final drugsData = getDrugsDataCubit.get(context).Drugs;
+
+                  return CustomwhiteContainer(
+                    child: DropdownSearch<String>(
+                      dropdownDecoratorProps: DropDownDecoratorProps(
+                        baseStyle: TextStyle(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black45,
+                        ),
+                        dropdownSearchDecoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          hintText: 'Select Drug',
+                          hintStyle: TextStyle(
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white
+                                : Colors.grey[600],
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          suffixIconColor: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black45,
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.blueAccent, width: 2),
+                          ),
+                        ),
+                      ),
+                      items: drugsData
+                          .map((department) => department['E_DESC']?.toString() ?? 'No Description')
+                          .toList(),
+                      selectedItem: selectedDrug,
+                      onChanged: (String? newValue) {
+                        selectedDrug = newValue; // Update the local variable when a new drug is selected
+                        onChanged(newValue); // Call the onChanged function
+                      },
+                    ),
+                  );
+                } else {
+                  return Container(); // Placeholder for unhandled states
+                }
+              },
+            ),
+          ),
+          IconButton(
+            onPressed: onEdit, // Call the edit function
+            icon: Icon(Icons.check_box, color: Colors.green),
+          ),
+        ],
+      ),
     );
   }
 }

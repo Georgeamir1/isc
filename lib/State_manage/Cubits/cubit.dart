@@ -1599,3 +1599,74 @@ class GetimageDateCubit extends Cubit<GetExaminationDataStatus> {
   }
 
 }
+//..............................................................................
+class UpdateMedicalRecord extends Cubit<UploadMedicalRecordStatus>
+{
+
+  static UpdateMedicalRecord get(BuildContext context) =>
+      BlocProvider.of(context);
+
+  UpdateMedicalRecord() : super(UploadMedicalRecordInitialState());
+  List<Map<String, dynamic>> Drugs = [];
+  void GetRecordDrugs(Docno) async {
+    try {
+      emit(UploadDrugsRecordLoadingState());
+      final response = await DioHelper.getData(url: 'http://192.168.1.198/api/medRec2/filtered/$ClinicID/$Docno');
+
+      // Cast response.data to List<Map<String, dynamic>>
+      Drugs = List<Map<String, dynamic>>.from(response.data);
+
+      print(Drugs);
+      print(Drugs[0]['pat_name']);
+      print('...............................................');
+      emit(UploadDrugsRecordSuccessState());
+    } catch (e) {
+      print(e);
+      emit(UploadDrugsRecordErrorState(e.toString()));
+    }
+  }
+  void editRecordDrugs({
+    required  ser,
+    required  doc_no,
+    required  doc_date,
+    required  code,
+    required pat_name,
+    required  drug_name,
+    required  use_nam_ar,
+    required  qty,
+  }) async {
+
+    try {
+      final response = await DioHelper.putData(
+        url: 'http://192.168.1.198/api/medRec2/$ser',
+        data: {
+          'ser': ser ?? '',
+          'doc_no': doc_no ?? '',
+          'doc_date': doc_date ?? '',
+          'pat_name': pat_name,
+          'drug_name': drug_name ?? '',
+          'id_clinic': ClinicID ?? '',
+          'use_nam_ar': use_nam_ar ?? '',
+          'qty': qty ?? '',
+        },
+      );
+
+      // Log the response status and body
+      print('Response Status: ${response.statusCode}');
+      print('Response Body: ${response.data}');
+
+      // Check if the response is successful
+      if (response.statusCode == 204) {
+        emit(UploadDrugsRecordSuccessState()); // Emit success state if edit is successful
+      } else {
+        emit(UploadDrugsRecordErrorState('Failed to update record: ${response.data}')); // Emit error state with response body
+      }
+    } catch (error) {
+      print('Error: $error'); // Log the error
+      emit(UploadDrugsRecordErrorState(error.toString())); // Emit error state on exception
+    }
+  }
+
+
+
+}
