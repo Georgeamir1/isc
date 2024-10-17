@@ -771,7 +771,6 @@ class MedsItem extends StatelessWidget {
               onPressed: () {
                 context.read<MedsCubit>().getMedications();
                 context.read<MedsCubit>().deleteMed(index);
-                print(index);
               },
             ),
           ],
@@ -807,7 +806,6 @@ class NewDrugItem extends StatelessWidget {
             onPressed: () {
               context.read<MedsCubit>().getMedications();
               context.read<MedsCubit>().deleteMed(index);
-              print(index);
             },)
               ],
             );
@@ -844,7 +842,6 @@ class NewExaminationItem extends StatelessWidget {
             onPressed: () {
               context.read<MedsCubit>().getMedications();
               context.read<MedsCubit>().deleteMed(index);
-              print(index);
             },)
               ],
             );
@@ -1118,6 +1115,8 @@ class PatientCodeSearchDelegate extends SearchDelegate {
 //..............................................................................
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title ;
+  final String subtitel ;
+  final bool subtitelbool;
   final double height;
   final List<Color> gradientColors;
   final TextStyle titleStyle;
@@ -1131,6 +1130,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   CustomAppBar({
     this.title ='',
+    this.subtitel ='',
+    this.subtitelbool = false,
     this.height = 72.0,
     this.gradientColors = const [Colors.lightBlue, Colors.indigo],
     this.titleStyle = const TextStyle(
@@ -1166,9 +1167,18 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           automaticallyImplyLeading: false,
           backgroundColor: backgroundColor,
           elevation: elevation,
-          title: Text(
-            title,
-            style: titleStyle,
+          title: Column(crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: titleStyle,
+              ),
+              if(subtitelbool)
+              Text(
+                subtitel,
+                style: TextStyle(color: Colors.white60,fontSize: 16),
+              ),
+            ],
           ),
           leading: leading,
           actions: actions,

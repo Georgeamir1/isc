@@ -38,7 +38,8 @@ class addnew extends StatelessWidget {
         BlocProvider(create: (BuildContext context) => getDrugsDataCubit()..getDepartmentsData()),
         BlocProvider(create: (BuildContext context) => MedsCubit()),
       ],
-      child: BlocConsumer<MedsCubit, MedsState>(
+      child:
+      BlocConsumer<MedsCubit, MedsState>(
         listener: (context, state) {
           if (state.error != null) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -159,7 +160,6 @@ class addnew extends StatelessWidget {
                                           shrinkWrap: true,
                                           itemCount: controllers.length,
                                           itemBuilder: (context, index) {
-                                            print(state.medications.length);
                                             if (index <
                                                 timesPerDayControllers
                                                     .length &&
@@ -231,8 +231,6 @@ class addnew extends StatelessWidget {
                 onTap: () {
                   context.read<MedsCubit>().getMedications();
                   _handleAddButton(context, state);
-                  print(state.medications.length);
-                  print(serviceonly);
                 },
                 child: CustomblueContainer(
                   height: 60,

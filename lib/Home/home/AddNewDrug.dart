@@ -75,7 +75,6 @@ class addnewDrug extends StatelessWidget {
                                           shrinkWrap: true,
                                           itemCount: controllers.length,
                                           itemBuilder: (context, index) {
-                                            print(state.medications.length);
                                               final controller4 =
                                               controllers[index];
                                               return Padding(
@@ -132,7 +131,6 @@ class addnewDrug extends StatelessWidget {
               floatingActionButton: GestureDetector(
                 onTap: () {
                   _handleAddButton(context, state);
-                  print('ID ${state.medications.length}');
                 },
                 child: CustomblueContainer(
                   height: 60,
@@ -197,7 +195,6 @@ class addnewDrug extends StatelessWidget {
     for (var med in medications) {
       // Check if the medication name already exists in the drugs list
        exists = drugs.any((drug) => drug['E_DESC'] == med['name']);
-      print(exists);
 
       if (!exists) {
         await context.read<getDrugsDataCubit>().NewDrug(

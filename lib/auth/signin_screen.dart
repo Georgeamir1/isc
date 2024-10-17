@@ -45,7 +45,6 @@ class _MainPageState extends State<MainPage> {
           body: BlocConsumer<getDataCubit, getLoginDataStates>(
             listener: (context, state) {
               if (state is getLoginDataErrorState) {
-                print('${state.error}');
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Network Error: ${state.error}')),
                 );

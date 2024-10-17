@@ -40,7 +40,6 @@ class BasicDataDrugs extends StatelessWidget {
             );
           }
           else if (state is DrugClinicErrorState) {
-            print(state.errorMessage,);
             return Center(
               child: Text(
                 state.errorMessage,

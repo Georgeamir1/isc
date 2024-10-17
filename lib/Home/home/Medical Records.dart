@@ -2,13 +2,14 @@ import 'package:conditional_builder_null_safety/conditional_builder_null_safety.
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isc/Home/Medical_Records/meds.dart';
-import 'package:isc/Home/home/updateMedicalRecords.dart';
+import 'package:isc/Home/Medical_Records/updateMedicalRecords.dart';
 import '../../State_manage/Cubits/cubit.dart';
 import '../../State_manage/States/States.dart';
 import '../../shared/Data.dart';
 import '../../shared/componants.dart';
 import '../Medical_Records/Services.dart';
 import '../Medical_Records/add new.dart';
+import '../Medical_Records/editExaminationMedicalRecords.dart';
 import 'Home.dart';
 
 class MedicalRecords extends StatelessWidget {
@@ -77,7 +78,6 @@ class MedicalRecords extends StatelessWidget {
                         builder: (context, state) {
                           var cubit = getpatientDataCubit.get(context);
                           patientname= '${cubit.patientname2}';
-                          print(patientname);
                           return Expanded(
                             child: CustomwhiteContainer(
                               child: Padding(
@@ -139,7 +139,6 @@ class MedicalRecords extends StatelessWidget {
                                           child: CircularProgressIndicator());
                                     } else if (state
                                         is GetPrescreptionDataSucessState) {
-                                      print(prescriptions);
                                       return
                                         ListView.builder(
                                           physics: BouncingScrollPhysics(),
@@ -152,6 +151,7 @@ class MedicalRecords extends StatelessWidget {
                                             final String name = items[0]['pat_name'].toString(); // Get patient name
                                             final String code = items[0]['code'].toString(); // Get patient code
                                             final String date = items[0]['doc_date'].toString(); // Get document date
+                                            final String ser = items[0]['doc_no'].toString(); // Get document date
 
                                             return Column(
                                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -161,13 +161,24 @@ class MedicalRecords extends StatelessWidget {
                                                   child: Column(
                                                     crossAxisAlignment: CrossAxisAlignment.start,
                                                     children: [
-                                                      Text(
-                                                        name,
-                                                        style: TextStyle(
-                                                          color: isDarkmodesaved ? Colors.white : Colors.black45,
-                                                          fontWeight: FontWeight.bold,
-                                                          fontSize: 20,
-                                                        ),
+                                                      Row(
+                                                        children: [
+                                                          Text(
+                                                            name,
+                                                            style: TextStyle(
+                                                              color: isDarkmodesaved ? Colors.white : Colors.black45,
+                                                              fontWeight: FontWeight.bold,
+                                                              fontSize: 20,
+                                                            ),
+                                                          ),
+                                                          Spacer(),
+                                                          IconButton(onPressed: ()
+                                                          {
+                                                            navigateToPage(context, UpdateMedicalRecords(docno:docno));
+                                                          }
+                                                          , icon: Icon(Icons.edit_note, color: isDarkmodesaved ? Colors.white : Colors.black45,size: 24,))
+
+                                                        ],
                                                       ),
                                                       Text(
                                                         isArabicsaved?'كود المريض: $code':'Code: $code',
@@ -260,13 +271,25 @@ class MedicalRecords extends StatelessWidget {
                                                   child: Column(
                                                     crossAxisAlignment: CrossAxisAlignment.start,
                                                     children: [
-                                                      Text(
-                                                        name,
-                                                        style: TextStyle(
-                                                          color: isDarkmodesaved ? Colors.white : Colors.black45,
-                                                          fontWeight: FontWeight.bold,
-                                                          fontSize: 20,
-                                                        ),
+                                                      Row(
+                                                        children: [
+                                                          Text(
+                                                            name,
+                                                            style: TextStyle(
+                                                              color: isDarkmodesaved ? Colors.white : Colors.black45,
+                                                              fontWeight: FontWeight.bold,
+                                                              fontSize: 20,
+                                                            ),
+                                                          ),
+                                                          Spacer(),
+
+                                                          IconButton(onPressed: ()
+                                                          {
+                                                            navigateToPage(context, Editexaminationmedicalrecords(docno:docno));
+                                                          }
+                                                              , icon: Icon(Icons.edit_note, color: isDarkmodesaved ? Colors.white : Colors.black45,size: 24,))
+
+                                                        ],
                                                       ),
                                                       Text(
                                                         isArabicsaved?'كود المريض: $code':'Code: $code',
@@ -426,7 +449,6 @@ class MedicalRecords extends StatelessWidget {
                                           child: CircularProgressIndicator());
                                     } else if (state is CombinedDateLoaded2) {
                                       return ListView.builder(
-
                                         itemCount:
                                             state.groupedDateCodePairs.length,
                                         itemBuilder: (context, index) {
@@ -511,10 +533,7 @@ class MedicalRecords extends StatelessWidget {
                                                           )
                                                         ],
                                                       ),
-                                                      onLongPress: () {
-                                                        print('${group.dateCodePairs.first.docno}');
-                                                        navigateToPage(context, UpdateMedicalRecords(docno: group.dateCodePairs.first.docno));
-                                                      },
+
                                                     ),
                                                   ),
                                                 ),

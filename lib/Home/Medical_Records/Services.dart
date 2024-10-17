@@ -79,7 +79,6 @@ class Services extends StatelessWidget {
                                 child: servicesitems( controller1: controller4,),
                               );
                             } else {
-                              print('Index out of bounds in ListView.builder: index=$index');
                               return SizedBox.shrink(); // Return an empty widget if index is out of range
                             }
                           },
@@ -103,12 +102,9 @@ class Services extends StatelessWidget {
                             child: Text(isArabicsaved?'تم':'Done'),
 
                             onPressed: () async {
-                            print('Patient Name: $patientname');
-                            print('Patient Code: $patientcode');
-                            print('Docslenth: $docslenth');
+
                             final Services = context.read<ServicessCubit>()
                                 .getServices();
-                            print('Services: $Services');
                             final completer = Completer<void>();
                             final currentState = state;
                             final lastIndex = currentState.controllers.length -
@@ -161,7 +157,6 @@ class Services extends StatelessWidget {
                               });
                             }
                             if (serviceonly == true) {
-                              print(serviceonly);
                               docslenth++;
                             }
 
