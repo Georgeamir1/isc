@@ -443,7 +443,22 @@ class HospitalDepartmentErrorState extends HospitalDepartmentState {
 
 //............................................................................
 // Base State Class
+abstract class ServicesDataState {}
 
+class ServicesDataInitialState extends ServicesDataState {}
+
+class ServicesDataLoadingState extends ServicesDataState {}
+class ServicesDataSuccessState extends ServicesDataState {}
+
+class ServicesDataLoadedState extends ServicesDataState {
+  final List<ServicesData> departments;
+  ServicesDataLoadedState(this.departments);
+}
+
+class ServicesDataErrorState extends ServicesDataState {
+  final String errorMessage;
+  ServicesDataErrorState(this.errorMessage);
+}
 //............................................................................
 abstract class DrugClinicState {}
 

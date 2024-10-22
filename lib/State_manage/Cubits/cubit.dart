@@ -798,6 +798,7 @@ class ServicessCubit extends Cubit<ServicesState> {
 class getDrugsDataCubit extends Cubit<getDrugsDataStatus> {
   List<Map<String, dynamic>> Drugs = [];
   List<Map<String, dynamic>> Examinations = [];
+  List<Map<String, dynamic>> Services = [];
   String? selectedDrug;
   String? selectedDrugCode;
   List<Map<String, dynamic>> departments = [];
@@ -864,6 +865,34 @@ class getDrugsDataCubit extends Cubit<getDrugsDataStatus> {
       print(error);
       emit(getDrugsDataErrorState(error.toString()));
     }
+  }Future<void>   NewService({
+    required String? SerName,
+    required int? PARTNO,
+
+  }) async
+  {
+    try {
+      emit(getDrugsDataLoadingState()); // Emit loading state
+
+      await     DioHelper.postData(
+        url: 'http://192.168.1.198/api/Sermast',
+        data: {
+          'A_DESC': SerName ?? '',
+          'PARTNO': PARTNO ?? '',
+          'id_clinic': ClinicID ?? '',
+        },
+      ).catchError((error) {
+        print(error);
+        emit(getDrugsDataErrorState(error.toString()));
+      });
+
+
+      // Emit success state after successful data posting
+      emit(newDrugsDataSucessState());
+    } catch (error) {
+      print(error);
+      emit(getDrugsDataErrorState(error.toString()));
+    }
   }
 
 
@@ -895,6 +924,24 @@ class getDrugsDataCubit extends Cubit<getDrugsDataStatus> {
 
       if (data is List) {
         Examinations = data.map((item) => Map<String, dynamic>.from(item)).toList();
+        emit(getDrugsDataSucessState(Drugs));
+      } else {
+        throw Exception('Unexpected data format');
+      }
+    } catch (e) {
+      print(e);
+      emit(getDrugsDataErrorState(e.toString()));
+    }
+  }
+  void getServicedata() async {
+    try {
+      emit(getDrugsDataLoadingState());
+      final response = await DioHelper.getData(
+          url: 'http://192.168.1.198/api/sermast/filtered/$ClinicID/');
+      final data = response.data;
+
+      if (data is List) {
+        Services = data.map((item) => Map<String, dynamic>.from(item)).toList();
         emit(getDrugsDataSucessState(Drugs));
       } else {
         throw Exception('Unexpected data format');
@@ -1205,23 +1252,25 @@ class CombinedDateCubit2 extends Cubit<CombinedDateState2> {
       ];
 
       _filterAndGroupDataByDocNo();
-    } catch (e) {
+      if (allDateCodePairs.isEmpty) {
+        print('No data available');
+        return;
+      }
+      final maxDocNoPair = allDateCodePairs.reduce((a, b) {
+        final docNoA = int.tryParse(a.docno) ?? 0;
+        final docNoB = int.tryParse(b.docno) ?? 0;
+
+        return docNoA > docNoB ? a : b;
+      });
+      docslenth = int.parse(maxDocNoPair.docno)+1;
+    }
+    catch (e) {
       emit(CombinedDateError2(e.toString()));
     }
   }
 
   void printMaxDocNo() {
-    if (allDateCodePairs.isEmpty) {
-      print('No data available');
-      return;
-    }
-    final maxDocNoPair = allDateCodePairs.reduce((a, b) {
-      final docNoA = int.tryParse(a.docno) ?? 0;
-      final docNoB = int.tryParse(b.docno) ?? 0;
 
-      return docNoA > docNoB ? a : b;
-    });
-    docslenth = int.parse(maxDocNoPair.docno)+1;
   }
 
   void updatePatientCode(String code) {
@@ -1592,6 +1641,65 @@ class GetimageDateCubit extends Cubit<GetExaminationDataStatus> {
 
 }
 //..............................................................................
+class ServicesData {
+  final int PARTNO;
+  final String serName;
+  final int idClinic;
+
+  ServicesData({
+    required this.PARTNO,
+    required this.serName,
+    required this.idClinic,
+  });
+
+  factory ServicesData.fromJson(Map<String, dynamic> json) {
+    return ServicesData(
+      PARTNO: json['PARTNO'] ?? 0,
+      serName: json['A_DESC'] ?? 'kk',
+      idClinic: json['id_clinic'] ?? 0,
+    );
+  }
+}
+
+class GEtServicesCubit extends Cubit<ServicesDataState> {
+  final Dio dio;
+
+  List<ServicesData>? Services;
+
+  GEtServicesCubit(this.dio) : super(ServicesDataInitialState());
+
+  Future<void> fetchServicesData() async {
+    emit(ServicesDataLoadingState());
+    try {
+      final response = await dio.get('http://192.168.1.198/api/sermast/filtered/$ClinicID');
+      Services = (response.data as List).map((dept) => ServicesData.fromJson(dept)).toList();
+      print(Services);
+      emit(ServicesDataLoadedState(Services!));
+    } catch (error) {
+      emit(ServicesDataErrorState(error.toString()));
+    }
+  }
+  void NewService({
+    required String? SerName,
+    required int? Partno,
+
+  }) {
+    DioHelper.postData(
+      url: 'http://192.168.1.198/api/Sermast',
+      data: {
+        'A_DESC': SerName ?? '',
+        'PARTNO': Partno ?? '',
+        'id_clinic': ClinicID ?? '',
+      },
+    ).catchError((error) {
+      print(error);
+      emit(ServicesDataErrorState(error.toString()));
+    });
+    emit(ServicesDataSuccessState());
+  }
+}
+
+//..............................................................................
 class UpdateMedicalRecord extends Cubit<UploadMedicalRecordStatus>
 {
 
@@ -1604,6 +1712,20 @@ class UpdateMedicalRecord extends Cubit<UploadMedicalRecordStatus>
     try {
       emit(UploadDrugsRecordLoadingState());
       final response = await DioHelper.getData(url: 'http://192.168.1.198/api/medRec2/filtered/$ClinicID/$Docno');
+
+      // Cast response.data to List<Map<String, dynamic>>
+      Drugs = List<Map<String, dynamic>>.from(response.data);
+
+      emit(UploadDrugsRecordSuccessState());
+    } catch (e) {
+      print(e);
+      emit(UploadDrugsRecordErrorState(e.toString()));
+    }
+  }
+  void GetServicesDrugs(Docno) async {
+    try {
+      emit(UploadDrugsRecordLoadingState());
+      final response = await DioHelper.getData(url: 'http://192.168.1.198/api/medRec3/filtered/$ClinicID/$Docno');
 
       // Cast response.data to List<Map<String, dynamic>>
       Drugs = List<Map<String, dynamic>>.from(response.data);
@@ -1665,6 +1787,40 @@ class UpdateMedicalRecord extends Cubit<UploadMedicalRecordStatus>
       emit(UploadDrugsRecordErrorState(error.toString())); // Emit error state on exception
     }
   }
+  void editRecordServices({
+    required  ser,
+    required  doc_no,
+    required  doc_date,
+    required  code,
+    required pat_name,
+    required  drug_name,
+  }) async {
+
+    try {
+      final response = await DioHelper.putData(
+        url: 'http://192.168.1.198/api/medRec3/$ser',
+        data: {
+          'ser': ser ?? '',
+          'code': code ?? '',
+          'doc_no': doc_no ?? '',
+          'doc_date': doc_date ?? '',
+          'pat_name': pat_name,
+          'ser_name': drug_name ?? '',
+          'id_clinic': ClinicID ?? '',
+
+        },
+      );
+
+      if (response.statusCode == 204) {
+        emit(UploadDrugsRecordSuccessState()); // Emit success state if edit is successful
+      } else {
+        emit(UploadDrugsRecordErrorState('Failed to update record: ${response.data}')); // Emit error state with response body
+      }
+    } catch (error) {
+      print('Error: $error'); // Log the error
+      emit(UploadDrugsRecordErrorState(error.toString())); // Emit error state on exception
+    }
+  }
   void editRecordExamination({
     required  ser,
     required  doc_no,
@@ -1704,6 +1860,14 @@ class UpdateMedicalRecord extends Cubit<UploadMedicalRecordStatus>
       ) {
     DioHelper.DeleteData(
       url: 'http://192.168.1.198/api/medRec2/$ser',
+    );
+  }
+  void DeletRecordServices({
+    required ser,
+  }
+      ) {
+    DioHelper.DeleteData(
+      url: 'http://192.168.1.198/api/medRec3/$ser',
     );
   }
 }

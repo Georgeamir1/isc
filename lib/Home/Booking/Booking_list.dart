@@ -165,7 +165,7 @@ class BookingList extends StatelessWidget {
                   duration: const Duration(milliseconds: 400),
                   distance: 50.0,
                   type: ExpandableFabType.up,
-                  pos: ExpandableFabPos.right,
+                  pos: isArabicsaved? ExpandableFabPos.left:ExpandableFabPos.right,
                   childrenOffset: const Offset(-3, 0),
                   childrenAnimation: ExpandableFabAnimation.rotate,
                   fanAngle: 100,
@@ -206,27 +206,39 @@ class BookingList extends StatelessWidget {
                     debugPrint('afterClose');
                   },
                   children: [
-                    FloatingActionButton.small(
-                      heroTag: null,
-                      child: CustomwhiteContainer(
-                        width: 50,
-                        height: 50,
-                        child: Icon(Icons.post_add, color: isDarkmodesaved ? Colors.white : Colors.black45),
-                      ),
-                      onPressed: () {
-                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => BookingNew()));
-                      },
+                    Row(
+                      children: [
+                        CustomText(Textdata: isArabicsaved ? 'حجز' : 'Reservation',color: Colors.white),
+                        SizedBox(width: 4),
+                        FloatingActionButton.small(
+                          heroTag: null,
+                          child: CustomwhiteContainer(
+                            width: 50,
+                            height: 50,
+                            child: Icon(Icons.post_add, color: isDarkmodesaved ? Colors.white : Colors.black45),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => BookingNew()));
+                          },
+                        ),
+                      ],
                     ),
-                    FloatingActionButton.small(
-                      heroTag: null,
-                      child: CustomwhiteContainer(
-                        width: 50,
-                        height: 50,
-                        child: Icon(Icons.person, color: isDarkmodesaved ? Colors.white : Colors.black45),
-                      ),
-                      onPressed: () {
-                        navigateToPage(context, NewPatient());
-                      },
+                    Row(
+                      children: [
+                        CustomText(Textdata: isArabicsaved ? 'مريض' : 'Patient',color: Colors.white),
+                        SizedBox(width: 4),
+                        FloatingActionButton.small(
+                          heroTag: null,
+                          child: CustomwhiteContainer(
+                            width: 50,
+                            height: 50,
+                            child: Icon(Icons.person, color: isDarkmodesaved ? Colors.white : Colors.black45),
+                          ),
+                          onPressed: () {
+                            navigateToPage(context, NewPatient());
+                          },
+                        ),
+                      ],
                     ),
                   ],
                 ),

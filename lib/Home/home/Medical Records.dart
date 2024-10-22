@@ -7,6 +7,7 @@ import '../../State_manage/Cubits/cubit.dart';
 import '../../State_manage/States/States.dart';
 import '../../shared/Data.dart';
 import '../../shared/componants.dart';
+import '../Medical_Records/EditServicesMedicalRecords.dart';
 import '../Medical_Records/Services.dart';
 import '../Medical_Records/add new.dart';
 import '../Medical_Records/editExaminationMedicalRecords.dart';
@@ -379,13 +380,24 @@ class MedicalRecords extends StatelessWidget {
                                                   child: Column(
                                                     crossAxisAlignment: CrossAxisAlignment.start,
                                                     children: [
-                                                      Text(
-                                                        patientName,
-                                                        style: TextStyle(
-                                                          color: isDarkmodesaved ? Colors.white : Colors.black45,
-                                                          fontWeight: FontWeight.bold,
-                                                          fontSize: 20,
-                                                        ),
+                                                      Row(
+                                                        children: [
+                                                          Text(
+                                                            patientName,
+                                                            style: TextStyle(
+                                                              color: isDarkmodesaved ? Colors.white : Colors.black45,
+                                                              fontWeight: FontWeight.bold,
+                                                              fontSize: 20,
+                                                            ),
+                                                          ),
+                                                          Spacer(),
+                                                          IconButton(onPressed: ()
+                                                          {
+                                                            navigateToPage(context, UpdateMedicalRecordsServices(docno:docno));
+                                                          }
+                                                              , icon: Icon(Icons.edit_note, color: isDarkmodesaved ? Colors.white : Colors.black45,size: 24,))
+
+                                                        ],
                                                       ),
                                                       Text(
                                                         isArabicsaved?'كود المريض: $code':'Code: $code',

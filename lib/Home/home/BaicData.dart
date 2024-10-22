@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
+import 'package:isc/Home/home/AddNewService.dart';
+import 'package:isc/Home/home/BasicDataServices.dart';
 import 'package:isc/Home/home/BasicdataDoctors.dart';
 import 'package:isc/Home/home/BasicdataPatients.dart';
 import 'package:isc/Home/home/Home.dart';
@@ -33,10 +35,11 @@ class Basicdata extends StatelessWidget {
         builder: (context, state) {
           var cubit = getpatientDataCubit.get(context);
 
-          return Directionality(
-            textDirection: isArabicsaved ? TextDirection.rtl : TextDirection.ltr,
-            child: WillPopScope(
-              onWillPop: () => _onWillPop(context),
+          return WillPopScope(
+            onWillPop: () => _onWillPop(context),
+
+            child: Directionality(
+              textDirection: isArabicsaved ? TextDirection.rtl : TextDirection.ltr,
 
               child: Scaffold(
                 appBar: CustomAppBar(
@@ -68,7 +71,12 @@ class Basicdata extends StatelessWidget {
                               ),
                               Row(
                                 children: [
+                                  Spacer(),
                                   buildChoiceChip(context, isArabicsaved ? 'التشخيصات' : 'Examination', state),
+                                  SizedBox(width: 20,),
+                                  buildChoiceChip(context, isArabicsaved ? 'الخدمات' : 'Services', state),
+                                  Spacer(),
+
                                 ],
                               )
                             ],
@@ -91,6 +99,9 @@ class Basicdata extends StatelessWidget {
                             } if (chipState is ChoiceChipSelected &&
                                 chipState.selectedChoice == (isArabicsaved ? 'التشخيصات' : 'Examination')) {
                               return BasicDataExaminations();
+                            }if (chipState is ChoiceChipSelected &&
+                                chipState.selectedChoice == (isArabicsaved ? 'الخدمات' : 'Services')) {
+                              return BasicDataServicess();
                             } else {
                               return Center(
                                 child: CustomText(
@@ -106,11 +117,12 @@ class Basicdata extends StatelessWidget {
                 ),
                 floatingActionButtonLocation: ExpandableFab.location,
                 floatingActionButton: ExpandableFab(
+
                   key: _key,
                   duration: const Duration(milliseconds: 400),
                   distance: 50.0,
                   type: ExpandableFabType.up,
-                  pos: ExpandableFabPos.right,
+                  pos: isArabicsaved? ExpandableFabPos.left:ExpandableFabPos.right,
                   childrenOffset: const Offset(-3, 0),
                   childrenAnimation: ExpandableFabAnimation.rotate,
                   fanAngle: 100,
@@ -209,6 +221,26 @@ class Basicdata extends StatelessWidget {
                           ),
                           onPressed: () {
                             navigateToPage(context, AddNewExamination());
+                          },
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        CustomText(Textdata: isArabicsaved ? 'خدمات' : 'ٍServices',color: Colors.white),
+                        SizedBox(width: 4),
+                        FloatingActionButton.small(
+                          heroTag: null,
+                          child: CustomwhiteContainer(
+                            width: 50,
+                            height: 50,
+                            child: Icon(
+                              Icons.fact_check_outlined,
+                              color: isDarkmodesaved ? Colors.white : Colors.black45,
+                            ),
+                          ),
+                          onPressed: () {
+                            navigateToPage(context, AddNewService());
                           },
                         ),
                       ],

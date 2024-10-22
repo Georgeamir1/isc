@@ -14,30 +14,30 @@ final logger = Logger();
 void logAction(String action) {
   logger.i(action);
 }
-class UpdateMedicalRecords extends StatelessWidget {
+class UpdateMedicalRecordsServices extends StatelessWidget {
   final String docno;
 
-  UpdateMedicalRecords({required this.docno});
+  UpdateMedicalRecordsServices({required this.docno});
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => UpdateMedicalRecord()..GetRecordDrugs(docno)),
-        BlocProvider(create: (context) => getDrugsDataCubit()..getDrugsdata()),
-        BlocProvider(create: (BuildContext context) => GetPrescreptionDateCubit()),
+        BlocProvider(create: (context) => UpdateMedicalRecord()..GetServicesDrugs(docno)),
+        BlocProvider(create: (context) => getDrugsDataCubit()..getExaminationdata()),
+        BlocProvider(create: (BuildContext context) => GetservicesDateCubit()),
       ],
-      child: _UpdateMedicalRecordsBody(),
+      child: _UpdateMedicalRecordsServicesBody(),
     );
   }
 }
 
-class _UpdateMedicalRecordsBody extends StatefulWidget {
+class _UpdateMedicalRecordsServicesBody extends StatefulWidget {
   @override
-  _UpdateMedicalRecordsBodyState createState() => _UpdateMedicalRecordsBodyState();
+  _UpdateMedicalRecordsServicesState createState() => _UpdateMedicalRecordsServicesState();
 }
 
-class _UpdateMedicalRecordsBodyState extends State<_UpdateMedicalRecordsBody> {
+class _UpdateMedicalRecordsServicesState extends State<_UpdateMedicalRecordsServicesBody> {
   List<String?> selectedDrugs = [];
   List<bool> hasChanged = [];
   List<Map<String, String>> newPrescriptions = [];
@@ -57,6 +57,7 @@ class _UpdateMedicalRecordsBodyState extends State<_UpdateMedicalRecordsBody> {
             selectedDrugs = List<String?>.filled(UpdateMedicalRecord.get(context).Drugs.length, null);
             hasChanged = List<bool>.filled(UpdateMedicalRecord.get(context).Drugs.length, false);
           }
+
           patName = UpdateMedicalRecord.get(context).Drugs[0]['pat_name']?.toString() ?? 'Unknown';
           docDate = UpdateMedicalRecord.get(context).Drugs[0]['doc_date']?.toString() ?? '';
           Code = UpdateMedicalRecord.get(context).Drugs[0]['code']?.toString() ?? '';
@@ -64,6 +65,7 @@ class _UpdateMedicalRecordsBodyState extends State<_UpdateMedicalRecordsBody> {
         } else if (state is UploadDrugsRecordErrorState) {
           patName = 'Error loading data';
         }
+
         return WillPopScope(
           onWillPop: () => _onWillPop(context),
 
@@ -103,7 +105,7 @@ class _UpdateMedicalRecordsBodyState extends State<_UpdateMedicalRecordsBody> {
                                     final code = drug['code'];
                                     final use_nam_ar = drug['use_nam_ar'];
                                     final qty = drug['qty'];
-                                    final drugName = drug['drug_name'];
+                                    final drugName = drug['ser_name'];
 
                                     return Padding(
                                       padding: const EdgeInsets.only(bottom: 8.0),
@@ -113,60 +115,24 @@ class _UpdateMedicalRecordsBodyState extends State<_UpdateMedicalRecordsBody> {
                                             onPressed: () {
                                               logAction('Updated drug: $drugName with dosage: $use_nam_ar for $qty');
 
-                                              UpdateMedicalRecord.get(context).editRecordDrugs(
+                                              UpdateMedicalRecord.get(context).editRecordServices(
                                                 ser: ser,
                                                 doc_no: doc_no,
                                                 doc_date: doc_date,
                                                 code: code,
                                                 pat_name: patName,
                                                 drug_name: selectedDrugs[index],
-                                                use_nam_ar: use_nam_ar,
-                                                qty: qty,
                                               );
                                               setState(() {
                                                 hasChanged[index] = false;
                                               });
-                                              context.read<UpdateMedicalRecord>().GetRecordDrugs(Docno);
+                                              context.read<UpdateMedicalRecord>().GetServicesDrugs(Docno);
                                             },
                                             icon: Icon(Icons.check_box, color: Colors.green),
                                           ),
                                           Expanded(
                                             child: CustomwhiteContainer(
                                               child: DropdownSearch<String>(
-                                                popupProps: PopupProps.menu(
-                                                  showSearchBox: true,
-                                                  searchFieldProps: TextFieldProps(
-                                                    style: TextStyle(
-                                                      color: isDarkmode ? Colors.white : Colors.black,
-                                                    ),
-                                                    decoration: InputDecoration(
-                                                      hintText: isArabicsaved ? 'ابحث' : 'Search',
-                                                      border: OutlineInputBorder(
-                                                        borderRadius: BorderRadius.circular(12),
-                                                        borderSide: BorderSide.none,
-                                                      ),
-                                                      filled: true,
-                                                      fillColor: Colors.grey[200],
-                                                      prefixIcon: Icon(
-                                                        Icons.search,
-                                                        color: Colors.grey[600],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  itemBuilder: (context, item, isSelected) =>
-                                                      ListTile(
-                                                        title: Text(
-                                                          item,
-                                                          style: TextStyle(
-                                                            color: isDarkmodesaved
-                                                                ? Colors.white
-                                                                : Colors.black,
-                                                          ),
-                                                        ),
-                                                        selected: isSelected,
-                                                      ),
-                                                ),
-
                                                 dropdownDecoratorProps: DropDownDecoratorProps(
                                                   dropdownSearchDecoration: InputDecoration(
                                                     contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -177,8 +143,8 @@ class _UpdateMedicalRecordsBodyState extends State<_UpdateMedicalRecordsBody> {
                                                     ),
                                                   ),
                                                 ),
-                                                items: context.read<getDrugsDataCubit>().Drugs
-                                                    .map((drug) => drug['E_DESC']?.toString() ?? 'No Description')
+                                                items: context.read<getDrugsDataCubit>().Examinations
+                                                    .map((drug) => drug['A_DESC']?.toString() ?? 'No Description')
                                                     .toList(),
                                                 selectedItem: selectedDrugs[index] ?? drugName,
                                                 onChanged: (String? newValue) {
@@ -215,7 +181,7 @@ class _UpdateMedicalRecordsBodyState extends State<_UpdateMedicalRecordsBody> {
                                                 onPressed: () {
                                                   // Call the delete method from UpdateMedicalRecord cubit
                                                   logAction('Deleted drug: ${drug['drug_name']}');
-                                                  UpdateMedicalRecord.get(context).DeletRecordDrugs(ser: ser);
+                                                  UpdateMedicalRecord.get(context).DeletRecordServices(ser: ser);
                                                   setState(() {
                                                     // Remove the item from the local state
                                                     UpdateMedicalRecord.get(context).Drugs.removeAt(index);
@@ -238,53 +204,21 @@ class _UpdateMedicalRecordsBodyState extends State<_UpdateMedicalRecordsBody> {
                                     children: [
                                       Expanded(
                                         child: DropdownSearch<String>(
-                                          popupProps: PopupProps.menu(
-                                            showSearchBox: true,
-                                            searchFieldProps: TextFieldProps(
-                                              style: TextStyle(
-                                                color: isDarkmode ? Colors.white : Colors.black,
-                                              ),
-                                              decoration: InputDecoration(
-                                                hintText: isArabicsaved ? 'ابحث' : 'Search',
-                                                border: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.circular(12),
-                                                  borderSide: BorderSide.none,
-                                                ),
-                                                filled: true,
-                                                fillColor: Colors.grey[200],
-                                                prefixIcon: Icon(
-                                                  Icons.search,
-                                                  color: Colors.grey[600],
-                                                ),
-                                              ),
-                                            ),
-                                            itemBuilder: (context, item, isSelected) =>
-                                                ListTile(
-                                                  title: Text(
-                                                    item,
-                                                    style: TextStyle(
-                                                      color: isDarkmodesaved
-                                                          ? Colors.white
-                                                          : Colors.black,
-                                                    ),
-                                                  ),
-                                                  selected: isSelected,
-                                                ),
-                                          ),
-
                                           dropdownDecoratorProps: DropDownDecoratorProps(
                                             dropdownSearchDecoration: InputDecoration(
+                                              
                                               contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                                               hintText: "Select Drug",
                                               border: OutlineInputBorder(
                                                 borderRadius: BorderRadius.circular(12),
                                                 borderSide: BorderSide.none,
+                                                
                                               ),
                                             ),
                                           ),
 
-                                          items: context.read<getDrugsDataCubit>().Drugs
-                                              .map((drug) => drug['E_DESC']?.toString() ?? 'No Description')
+                                          items: context.read<getDrugsDataCubit>().Examinations
+                                              .map((drug) => drug['A_DESC']?.toString() ?? 'No Description')
                                               .toList(),
                                           onChanged: (String? newValue) {
                                             if (newValue != null) {
@@ -298,6 +232,7 @@ class _UpdateMedicalRecordsBodyState extends State<_UpdateMedicalRecordsBody> {
                                             }
                                           },
                                           selectedItem: 'select new drug',
+                                          dropdownButtonProps: DropdownButtonProps(icon: Icon(Icons.add_circle_outline_rounded, color: Colors.black54,)),
                                         ),
                                       ),
                                       SizedBox(width: 10),
@@ -314,96 +249,35 @@ class _UpdateMedicalRecordsBodyState extends State<_UpdateMedicalRecordsBody> {
                                       padding: const EdgeInsets.symmetric(horizontal: 10.0,vertical: 4),
                                       child: CustomwhiteContainer(
                                         child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
-                                            Padding(
-                                              padding: const EdgeInsets.all(10.0),
-                                              child: DropdownSearch<String>(
-                                                popupProps: PopupProps.menu(
-                                                  showSearchBox: true,
-                                                  searchFieldProps: TextFieldProps(
-                                                    style: TextStyle(
-                                                      color: isDarkmode ? Colors.white : Colors.black,
-                                                    ),
-                                                    decoration: InputDecoration(
-                                                      hintText: isArabicsaved ? 'ابحث' : 'Search',
-                                                      border: OutlineInputBorder(
-                                                        borderRadius: BorderRadius.circular(12),
-                                                        borderSide: BorderSide.none,
-                                                      ),
-                                                      filled: true,
-                                                      fillColor: Colors.grey[200],
-                                                      prefixIcon: Icon(
-                                                        Icons.search,
-                                                        color: Colors.grey[600],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  itemBuilder: (context, item, isSelected) =>
-                                                      ListTile(
-                                                        title: Text(
-                                                          item,
-                                                          style: TextStyle(
-                                                            color: isDarkmodesaved
-                                                                ? Colors.white
-                                                                : Colors.black,
-                                                          ),
-                                                        ),
-                                                        selected: isSelected,
-                                                      ),
-                                                ),
-
-                                                dropdownDecoratorProps: DropDownDecoratorProps(
-                                                  dropdownSearchDecoration: InputDecoration(
-                                                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                                                    hintText: "Select Drug",
-                                                    border: OutlineInputBorder(
-                                                      borderRadius: BorderRadius.circular(12),
-                                                    ),
-                                                  ),
-                                                ),
-                                                items: context.read<getDrugsDataCubit>().Drugs
-                                                    .map((drug) => drug['E_DESC']?.toString() ?? 'No Description')
-                                                    .toList(),
-                                                selectedItem: newPrescriptions[index]['drug'],
-                                                onChanged: (String? newValue) {
-                                                  if (newValue != null) {
-                                                    setState(() {
-                                                      newPrescriptions[index]['drug'] = newValue;
-                                                    });
-                                                  }
-                                                },
-                                              ),
-                                            ),
                                             Row(
                                               children: [
-                                                SizedBox(width: 10),
                                                 Expanded(
-                                                  child: TextField(
-                                                    keyboardType: TextInputType.numberWithOptions(),
-                                                    decoration: InputDecoration(
-                                                      labelText: 'Times per Day',
-                                                      border: OutlineInputBorder(),
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.only(left: 10.0,top: 10),
+                                                    child: DropdownSearch<String>(
+                                                      dropdownDecoratorProps: DropDownDecoratorProps(
+                                                        dropdownSearchDecoration: InputDecoration(
+                                                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                                          hintText: "Select Drug",
+                                                          border: OutlineInputBorder(
+                                                            borderRadius: BorderRadius.circular(12),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      items: context.read<getDrugsDataCubit>().Examinations
+                                                          .map((drug) => drug['A_DESC']?.toString() ?? 'No Description')
+                                                          .toList(),
+                                                      selectedItem: newPrescriptions[index]['drug'],
+                                                      onChanged: (String? newValue) {
+                                                        if (newValue != null) {
+                                                          setState(() {
+                                                            newPrescriptions[index]['drug'] = newValue;
+                                                          });
+                                                        }
+                                                      },
                                                     ),
-                                                    onChanged: (value) {
-                                                      setState(() {
-                                                        newPrescriptions[index]['timesPerDay'] = value;
-                                                      });
-                                                    },
-                                                  ),
-                                                ),
-                                                SizedBox(width: 10),
-                                                Expanded(
-                                                  child: TextField(
-                                                    keyboardType: TextInputType.numberWithOptions(),
-                                                    decoration: InputDecoration(
-                                                      labelText: 'Days',
-                                                      border: OutlineInputBorder(),
-                                                    ),
-                                                    onChanged: (value) {
-                                                      setState(() {
-                                                        newPrescriptions[index]['days'] = value;
-                                                      });
-                                                    },
                                                   ),
                                                 ),
                                                 IconButton(
@@ -414,8 +288,10 @@ class _UpdateMedicalRecordsBodyState extends State<_UpdateMedicalRecordsBody> {
                                                     });
                                                   },
                                                 ),
+
                                               ],
                                             ),
+
                                             SizedBox(height: 10),
                                           ],
                                         ),
@@ -425,12 +301,11 @@ class _UpdateMedicalRecordsBodyState extends State<_UpdateMedicalRecordsBody> {
                                 ),
                                 SizedBox(height: 8,),
                                 GestureDetector(
-                                    onTap: () async {
+                                    onTap: () async
+                                    {
                                       for (var prescription in newPrescriptions) {
 
                                         var drugName = prescription['drug']?.trim();
-                                        var timesPerDay = prescription['timesPerDay'];
-                                        var days = prescription['days'];
 
                                         bool existsInDrugsList = UpdateMedicalRecord.get(context).Drugs.any((drug) =>
                                         drug['drug_name']?.trim() == drugName);
@@ -445,17 +320,14 @@ class _UpdateMedicalRecordsBodyState extends State<_UpdateMedicalRecordsBody> {
                                           continue;
                                         }
 
-                                        if (drugName != null && timesPerDay != null && timesPerDay.isNotEmpty && days != null && days.isNotEmpty) {
+                                        if (drugName != null ) {
                                           logAction('Saving new drugs: $newPrescriptions');
 
-                                          await context.read<GetPrescreptionDateCubit>().NewPrescreption(
-                                            PatientName: patName,
-                                            patcode: Code.toString(),
-                                            Drugname: drugName,
-                                            Docno: Docno.toString(),
-                                            use_nam_ar: timesPerDay,
-                                            qty: days.toString(),
-                                          );
+                                          await context.read<GetservicesDateCubit>().NewService(
+                                              PatientName: patName,
+                                              patcode: Code,
+                                              disname: drugName,
+                                              Docno: Docno);
 
                                         } else {
                                           ScaffoldMessenger.of(context).showSnackBar(
@@ -469,7 +341,7 @@ class _UpdateMedicalRecordsBodyState extends State<_UpdateMedicalRecordsBody> {
                                       setState(() {
                                         newPrescriptions.clear();
                                       });
-                                      context.read<UpdateMedicalRecord>().GetRecordDrugs(Docno);
+                                      context.read<UpdateMedicalRecord>().GetServicesDrugs(Docno);
 
                                     },
 

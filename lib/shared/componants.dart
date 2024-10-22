@@ -745,34 +745,42 @@ class MedsItem extends StatelessWidget {
         Row(
           children: [
             ReusableTextFormField(
-              width: 38,
+
+              Align: TextAlign.center,
+              width: 40,
               maxLenght: 1,
               keyboardType: TextInputType.numberWithOptions(),
-              textStyle: TextStyle(color: isDarkmodesaved ? Colors.white : Colors.black54, fontWeight: FontWeight.bold, fontSize: 16),
-              height: 45,
+              textStyle: TextStyle(color: isDarkmodesaved ? Colors.white : Colors.black54, fontWeight: FontWeight.bold, fontSize: 18),
+              height: 40,
               controller: timesPerDayController,
               hintText: '',
+
             ),
             const SizedBox(width: 6),
             Text(isArabicsaved?'مرات لمده ':'Times per day For ', style: TextStyle(color: isDarkmodesaved ? Colors.white : Colors.black54, fontWeight: FontWeight.bold, fontSize: 16)),
             ReusableTextFormField(
-              width: 38,
+              Align: TextAlign.center,
+              width: 40,
               maxLenght: 1,
               keyboardType: TextInputType.numberWithOptions(),
-              height: 45,
-              textStyle: TextStyle(color: isDarkmodesaved ? Colors.white : Colors.black54, fontWeight: FontWeight.bold, fontSize: 16),
+              textStyle: TextStyle(color: isDarkmodesaved ? Colors.white : Colors.black54, fontWeight: FontWeight.bold, fontSize: 18),
+              height: 40,
               controller: daysController,
               hintText: '',
             ),
-            const SizedBox(width: 4),
+            const SizedBox(width: 6),
             Text(isArabicsaved?' ايام ':'Days', style: TextStyle(color: isDarkmodesaved ? Colors.white : Colors.black54, fontWeight: FontWeight.bold, fontSize: 16),),
-            if (index >0)IconButton(
-              icon: Icon(Icons.delete, color: Colors.red),
-              onPressed: () {
-                context.read<MedsCubit>().getMedications();
-                context.read<MedsCubit>().deleteMed(index);
-              },
-            ),
+            const SizedBox(width: 6),
+            if (index >0)
+              GestureDetector(
+              onTap: () {
+      context.read<MedsCubit>().getMedications();
+      context.read<MedsCubit>().deleteMed(index);
+    },
+                child: CustomwhiteContainer(
+                    width: 36,
+                    height: 36,
+                    child: Icon(Icons.delete, color: Colors.red,))),
           ],
         ),
         SizedBox(height: 16),
@@ -855,6 +863,42 @@ class NewExaminationItem extends StatelessWidget {
     );
   }
 }
+class NewServiceItem extends StatelessWidget {
+  final TextEditingController nameController;
+  final int index;
+  const NewServiceItem({
+    Key? key,
+    required this.nameController,
+    required this.index,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        BlocBuilder<getDrugsDataCubit, getDrugsDataStatus>(
+          builder: (context, state) {
+            return Row(
+              children: [
+                Expanded(child: ReusableTextFormField(controller: nameController, hintText: isArabicsaved? 'ادخل اسم الخدمه':'Enter Service name',)),
+              if (index >0)IconButton(
+            icon: Icon(Icons.delete, color: Colors.red),
+            onPressed: () {
+              context.read<MedsCubit>().getMedications();
+              context.read<MedsCubit>().deleteMed(index);
+            },)
+              ],
+            );
+          },
+        ),
+        SizedBox(height: 16),
+        divider(),
+        SizedBox(height: 8),
+
+      ],
+    );
+  }
+}
 class Recordsitems extends StatelessWidget {
   final TextEditingController controller1;
   const Recordsitems({
@@ -913,8 +957,6 @@ class servicesitems extends StatelessWidget {
   const servicesitems({
     Key? key,
     required this.controller1,
-
-
   }) : super(key: key);
 
   @override
@@ -930,13 +972,13 @@ class servicesitems extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: Autocomplete<Map<String, dynamic>>(
                   optionsBuilder: (textEditingValue) {
-                    return getDrugsDataCubit.get(context).Drugs.where((drug) =>
-                        drug['E_DESC'].toLowerCase().contains(textEditingValue.text.toLowerCase()));
+                    return getDrugsDataCubit.get(context).Services.where((drug) =>
+                        drug['A_DESC'].toLowerCase().contains(textEditingValue.text.toLowerCase()));
                   },
-                  displayStringForOption: (option) => option['E_DESC'],
+                  displayStringForOption: (option) => option['A_DESC'],
                   onSelected: (selectedItem) {
-                    context.read<getDrugsDataCubit>().selectUser(selectedItem['E_DESC']);
-                    controller1.text = selectedItem['E_DESC'];
+                    context.read<getDrugsDataCubit>().selectUser(selectedItem['A_DESC']);
+                    controller1.text = selectedItem['A_DESC'];
                   },
                   fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
                     return Padding(
@@ -1196,6 +1238,7 @@ class CustomwhiteContainer extends StatelessWidget {
   final double? height;
   final double? Radius;
   final Color? color;
+  final Color? bordercolor;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
 
@@ -1208,11 +1251,13 @@ class CustomwhiteContainer extends StatelessWidget {
     this.margin,
     this.Radius,
     this.color,
+    this.bordercolor,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      alignment: Alignment.center,
       width: width,
       height: height,
       padding: padding,
@@ -1227,6 +1272,7 @@ class CustomwhiteContainer extends StatelessWidget {
             offset: Offset(0, 2),
           ),
         ],
+        border: Border.all(color: bordercolor?? Colors.white),
         borderRadius: BorderRadius.circular(Radius??12),
       ),
       child: child,
@@ -1345,6 +1391,7 @@ class ReusableTextFormField extends StatelessWidget {
   final TextStyle? textStyle;
   final int? maxLines;
   final int? maxLenght;
+  final double? Fontsize;
   final TextInputType? keyboardType;
   final bool obscureText;
   final EdgeInsetsGeometry? padding;
@@ -1371,6 +1418,7 @@ class ReusableTextFormField extends StatelessWidget {
     this.padding,
     this.margin,
     this.Align,
+    this.Fontsize,
     this.prefixIconButton, // Initialize the new parameter
   }) : super(key: key);
 
@@ -1381,37 +1429,43 @@ class ReusableTextFormField extends StatelessWidget {
       height: height,
       padding: padding,
       margin: margin,
-      child: TextFormField(
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: TextFormField(
+             maxLength: maxLenght,
+            buildCounter: (context, {required currentLength, required isFocused, maxLength}) {
+              return null; // Return null to hide the counter
+            },
+            textAlign: Align ?? (isArabicsaved?TextAlign.right:TextAlign.left),
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            onChanged: onChanged,
+            controller: controller,
+            obscureText: obscureText,
+            keyboardType: keyboardType,
+            decoration: InputDecoration(
 
-         maxLength: maxLenght,
-        buildCounter: (context, {required currentLength, required isFocused, maxLength}) {
-          return null; // Return null to hide the counter
-        },
-        textAlign: Align ?? (isArabicsaved?TextAlign.right:TextAlign.left),
-        autovalidateMode: AutovalidateMode.onUserInteraction,
-        onChanged: onChanged,
-        controller: controller,
-        obscureText: obscureText,
-        keyboardType: keyboardType,
-        decoration: InputDecoration(
-          suffixIcon: prefixIconButton,
-          hintStyle: hintStyle ?? TextStyle(
-            color: isDarkmodesaved ? Colors.white : Colors.grey[600],
-            fontWeight: FontWeight.w400,
-          ),
-          hintText: hintText,
-          fillColor: fillColor,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide.none,
+              suffixIcon: prefixIconButton,
+              hintStyle: hintStyle ?? TextStyle(
+                color: isDarkmodesaved ? Colors.white : Colors.grey[600],
+                fontWeight: FontWeight.w400,
+              ),
+              hintText: hintText,
+              fillColor: fillColor,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+            ),
+            style: textStyle ?? TextStyle(
+              fontSize: Fontsize,
+              color: isDarkmodesaved ? Colors.white : Colors.black54,
+              fontWeight: FontWeight.bold,
+            ),
+            validator: validator,
+            maxLines: maxLines,
           ),
         ),
-        style: textStyle ?? TextStyle(
-          color: isDarkmodesaved ? Colors.white : Colors.black54,
-          fontWeight: FontWeight.bold,
-        ),
-        validator: validator,
-        maxLines: maxLines,
       ),
     );
   }
@@ -1798,6 +1852,18 @@ class DepartmentItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(department.name),
+    );
+  }
+}
+class ServicesDataItem extends StatelessWidget {
+  final ServicesData Services;
+
+  const ServicesDataItem({Key? key, required this.Services}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(Services.serName),
     );
   }
 }

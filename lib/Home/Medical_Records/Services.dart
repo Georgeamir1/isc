@@ -2,17 +2,11 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:isc/Home/home/Home.dart';
-import 'package:isc/Home/home/Medical%20Records.dart';
 import 'package:isc/shared/componants.dart';
 import '../../State_manage/Cubits/cubit.dart';
 import '../../State_manage/States/States.dart';
 import '../../shared/Data.dart';
 import 'package:screenshot/screenshot.dart';
-import 'package:printing/printing.dart';
-import 'package:pdf/widgets.dart' as pw;
-import 'dart:typed_data';
-import 'package:pdf/pdf.dart';
 
 class Services extends StatelessWidget {
   final ScreenshotController screenshotController = ScreenshotController();
@@ -23,7 +17,7 @@ class Services extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => RecordssCubit()),
-        BlocProvider(create: (context) => getDrugsDataCubit()..getDrugsdata()),
+        BlocProvider(create: (context) => getDrugsDataCubit()..getServicedata()),
         BlocProvider(create: (context) => GetservicesDateCubit()),
         BlocProvider(create: (context) => ServicessCubit()),
         BlocProvider(create: (context) => CombinedDateCubit2())
@@ -43,7 +37,6 @@ class Services extends StatelessWidget {
         builder: (context, state) {
           // Ensure controllers list has the expected length
           final controllers = state.controllers;
-
           if (controllers.length != controllers.length ) {
             // Handle the mismatch, perhaps show an error message or log the issue
             return Center(child: Text('Controllers length mismatch'));
@@ -72,8 +65,6 @@ class Services extends StatelessWidget {
                           itemBuilder: (context, index) {
                             if (index < controllers.length) {
                               final controller4 = controllers[index];
-
-
                               return Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: servicesitems( controller1: controller4,),
@@ -102,6 +93,7 @@ class Services extends StatelessWidget {
                             child: Text(isArabicsaved?'تم':'Done'),
 
                             onPressed: () async {
+                              print('............$docslenth');
 
                             final Services = context.read<ServicessCubit>()
                                 .getServices();
